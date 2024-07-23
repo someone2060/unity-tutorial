@@ -12,14 +12,20 @@ public class Player : MonoBehaviour
     [SerializeField] private GameInput gameInput;
     
     private bool _isWalking;
+    private Vector3 _lastInteractDirection;
+    
     private const float PlayerSize = 0.7f;
     private const float PlayerHeight = 2.0f;
 
     private void Update()
     {
         UpdateMovement();
+        UpdateInteractions();
     }
 
+    /**
+     * Updates player movement, stopping or sliding movement if collision with an object occurs.
+     */
     private void UpdateMovement()
     {
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
@@ -65,6 +71,33 @@ public class Player : MonoBehaviour
         float rotateSpeed = 10.0f;
         transform.forward = Vector3.Slerp(
             transform.forward, moveDirection, Time.deltaTime*rotateSpeed);
+    }
+
+    /**
+     * Sends a raycast in the movement direction to check for collision with other objects.
+     * If the player is not moving, stores the last collided object.
+     */
+    private void UpdateInteractions()
+    {
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+
+        Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
+
+        if (moveDirection != Vector3.zero)
+        {
+            _lastInteractDirection = moveDirection;
+        }
+        
+        float interactDistance = 2.0f;
+        if (Physics.Raycast(transform.position, _lastInteractDirection, 
+                out RaycastHit raycastHit, interactDistance))
+        {
+            Debug.Log("Object hit: " + raycastHit.transform);
+        }
+        else
+        {
+            Debug.Log("-");
+        }
     }
 
     /**
