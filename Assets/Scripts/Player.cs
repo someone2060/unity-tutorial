@@ -17,6 +17,11 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        UpdateMovement();
+    }
+
+    private void UpdateMovement()
+    {
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
 
         Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
@@ -25,7 +30,7 @@ public class Player : MonoBehaviour
         
         bool canMove = !MovementCollides(moveDirection, moveDistance);
 
-        // If unable to move, check for movement only along X-axis or Z-axis
+        // If unable to move, check for movement independently along X-axis or Z-axis
         if (!canMove)
         {
             do
