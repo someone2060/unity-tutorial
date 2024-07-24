@@ -78,36 +78,57 @@ public class Player : MonoBehaviour
             do
             {
                 // Test X movement
-                Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-                canMove = !MovementCollides(moveDirectionX, moveDistance);
-                if (canMove)
+                if (moveDirection.x != 0)
                 {
-                    moveDirection = moveDirectionX;
-                    break;
+                    Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
+                    canMove = !MovementCollides(moveDirectionX, moveDistance);
+                    if (canMove)
+                    {
+                        moveDirection = moveDirectionX;
+                        break;
+                    }
                 }
 
                 // Test Z movement
-                Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                canMove = !MovementCollides(moveDirectionZ, moveDistance);
-                if (canMove)
+                if (moveDirection.z != 0)
                 {
-                    moveDirection = moveDirectionZ;
-                    break;
+                    Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
+                    canMove = !MovementCollides(moveDirectionZ, moveDistance);
+                    if (canMove)
+                    {
+                        moveDirection = moveDirectionZ;
+                        break;
+                    }
                 }
             } while (false);
         }
-        
+
         // Able to fully move in wanted direction
         if (canMove)
         {
             transform.position += moveDirection * moveDistance;
         }
 
-        _isWalking = (moveDirection != Vector3.zero);
+        _isWalking = (moveDirection != Vector3.zero) && canMove;
+        Debug.Log(_isWalking);
 
-        float rotateSpeed = 10.0f;
+        var rotateSpeed = 10.0f;
         transform.forward = Vector3.Slerp(
             transform.forward, moveDirection, Time.deltaTime*rotateSpeed);
+    }
+
+    /**
+     * Uses Physics.CapsuleCast to check if player movement along the inputted Vector3
+     * collides with anything during its movement.
+     */
+    private bool MovementCollides(Vector3 moveDirection, float moveDistance)
+    {
+        return Physics.CapsuleCast(
+            transform.position,
+            transform.position + (Vector3.up * PlayerHeight),
+            PlayerSize,
+            moveDirection,
+            moveDistance);
     }
 
     /**
@@ -156,20 +177,6 @@ public class Player : MonoBehaviour
         {
             SelectedCounter = _selectedCounter
         });
-    }
-
-    /**
-     * Uses Physics.CapsuleCast to check if player movement along the inputted Vector3
-     * collides with anything during its movement.
-     */
-    private bool MovementCollides(Vector3 moveDirection, float moveDistance)
-    {
-        return Physics.CapsuleCast(
-            transform.position,
-            transform.position + Vector3.up * PlayerHeight,
-            PlayerSize,
-            moveDirection,
-            moveDistance);
     }
 
     public bool IsWalking()
