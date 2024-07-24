@@ -10,6 +10,14 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+    
+    public event EventHandler<OnSelectedCounterChangeEventArgs> OnSelectedCounterChanged;
+    public class OnSelectedCounterChangeEventArgs : EventArgs
+    {
+        public ClearCounter SelectedCounter;
+    }
+    
     [SerializeField] private float moveSpeed = 1.0f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
@@ -21,6 +29,15 @@ public class Player : MonoBehaviour
     
     private const float PlayerSize = 0.7f;
     private const float PlayerHeight = 2.0f;
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Debug.LogError("There is more than one Player instance!");
+        }
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -114,21 +131,31 @@ public class Player : MonoBehaviour
         if (!Physics.Raycast(transform.position, _lastInteractDirection,
                 out RaycastHit raycastHit, interactDistance, countersLayerMask))
         {
-            _selectedCounter = null;
+            SetSelectedCounter(null);
             return;
         }
 
         // Check if collided object is a ClearCounter
         if (!raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
         {
-            _selectedCounter = null;
+            SetSelectedCounter(null);
             return;
         }
         
         if (clearCounter != _selectedCounter)
         {
-            _selectedCounter = clearCounter;
+            SetSelectedCounter(clearCounter);
         }
+    }
+
+    private void SetSelectedCounter(ClearCounter selectedCounter)
+    {
+        _selectedCounter = selectedCounter;
+        
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangeEventArgs
+        {
+            SelectedCounter = _selectedCounter
+        });
     }
 
     /**
