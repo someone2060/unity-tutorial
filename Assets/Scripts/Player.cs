@@ -10,13 +10,14 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 1.0f;
     [SerializeField] private GameInput gameInput;
+    [SerializeField] private LayerMask countersLayerMask;
     
     private bool _isWalking;
     private Vector3 _lastInteractDirection;
     
     private const float PlayerSize = 0.7f;
     private const float PlayerHeight = 2.0f;
-
+    
     private void Update()
     {
         UpdateMovement();
@@ -90,9 +91,12 @@ public class Player : MonoBehaviour
         
         float interactDistance = 2.0f;
         if (Physics.Raycast(transform.position, _lastInteractDirection, 
-                out RaycastHit raycastHit, interactDistance))
+                out RaycastHit raycastHit, interactDistance, countersLayerMask))
         {
-            Debug.Log("Object hit: " + raycastHit.transform);
+            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+            {
+                clearCounter.Interact();
+            }
         }
         else
         {
