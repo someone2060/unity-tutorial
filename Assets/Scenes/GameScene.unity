@@ -782,6 +782,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   gameInput: {fileID: 2061759764}
+  countersLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!4 &795555677 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3294758251327466532, guid: 1c5dda3c7cd3cf742afcade5419faeab,

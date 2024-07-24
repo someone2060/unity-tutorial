@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
@@ -17,7 +18,34 @@ public class Player : MonoBehaviour
     
     private const float PlayerSize = 0.7f;
     private const float PlayerHeight = 2.0f;
-    
+
+    private void Start()
+    {
+        gameInput.OnInteractAction += GameInput_OnInteractAction;
+    }
+
+    private void GameInput_OnInteractAction(object sender, EventArgs e)
+    {
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+
+        Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
+
+        if (moveDirection != Vector3.zero)
+        {
+            _lastInteractDirection = moveDirection;
+        }
+        
+        float interactDistance = 2.0f;
+        if (Physics.Raycast(transform.position, _lastInteractDirection, 
+                out RaycastHit raycastHit, interactDistance, countersLayerMask))
+        {
+            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+            {
+                clearCounter.Interact();
+            }
+        }
+    }
+
     private void Update()
     {
         UpdateMovement();
@@ -95,12 +123,8 @@ public class Player : MonoBehaviour
         {
             if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
             {
-                clearCounter.Interact();
+                //clearCounter.Interact();
             }
-        }
-        else
-        {
-            Debug.Log("-");
         }
     }
 
