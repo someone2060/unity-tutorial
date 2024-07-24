@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Vector2 = UnityEngine.Vector2;
@@ -9,15 +10,34 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+    
+    public event EventHandler<OnSelectedCounterChangeEventArgs> OnSelectedCounterChanged;
+    public class OnSelectedCounterChangeEventArgs : EventArgs
+    {
+        public ClearCounter SelectedCounter;
+    }
+    
     [SerializeField] private float moveSpeed = 1.0f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
     
     private bool _isWalking;
     private Vector3 _lastInteractDirection;
+    /** Current counter that player can interact with */
+    private ClearCounter _selectedCounter;
     
     private const float PlayerSize = 0.7f;
     private const float PlayerHeight = 2.0f;
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Debug.LogError("There is more than one Player instance!");
+        }
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -26,23 +46,9 @@ public class Player : MonoBehaviour
 
     private void GameInput_OnInteractAction(object sender, EventArgs e)
     {
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
-
-        Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
-
-        if (moveDirection != Vector3.zero)
+        if (_selectedCounter != null)
         {
-            _lastInteractDirection = moveDirection;
-        }
-        
-        float interactDistance = 2.0f;
-        if (Physics.Raycast(transform.position, _lastInteractDirection, 
-                out RaycastHit raycastHit, interactDistance, countersLayerMask))
-        {
-            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
-            {
-                clearCounter.Interact();
-            }
+            _selectedCounter.Interact();
         }
     }
 
@@ -65,41 +71,63 @@ public class Player : MonoBehaviour
         
         bool canMove = !MovementCollides(moveDirection, moveDistance);
 
-        // If unable to move, check for movement independently along X-axis or Z-axis
+        // If unable to move in wanted direction,
+        // check for movement along X-axis or Z-axis.
         if (!canMove)
         {
             do
             {
                 // Test X movement
-                Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-                canMove = !MovementCollides(moveDirectionX, moveDistance);
-                if (canMove)
+                if (moveDirection.x != 0)
                 {
-                    moveDirection = moveDirectionX;
-                    break;
+                    Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
+                    canMove = !MovementCollides(moveDirectionX, moveDistance);
+                    if (canMove)
+                    {
+                        moveDirection = moveDirectionX;
+                        break;
+                    }
                 }
 
                 // Test Z movement
-                Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                canMove = !MovementCollides(moveDirectionZ, moveDistance);
-                if (canMove)
+                if (moveDirection.z != 0)
                 {
-                    moveDirection = moveDirectionZ;
-                    break;
+                    Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
+                    canMove = !MovementCollides(moveDirectionZ, moveDistance);
+                    if (canMove)
+                    {
+                        moveDirection = moveDirectionZ;
+                        break;
+                    }
                 }
             } while (false);
         }
-        
+
+        // Able to fully move in wanted direction
         if (canMove)
         {
             transform.position += moveDirection * moveDistance;
         }
 
-        _isWalking = (moveDirection != Vector3.zero);
+        _isWalking = (moveDirection != Vector3.zero) && canMove;
 
-        float rotateSpeed = 10.0f;
+        var rotateSpeed = 10.0f;
         transform.forward = Vector3.Slerp(
             transform.forward, moveDirection, Time.deltaTime*rotateSpeed);
+    }
+
+    /**
+     * Uses Physics.CapsuleCast to check if player movement along the inputted Vector3
+     * collides with anything during its movement.
+     */
+    private bool MovementCollides(Vector3 moveDirection, float moveDistance)
+    {
+        return Physics.CapsuleCast(
+            transform.position,
+            transform.position + (Vector3.up * PlayerHeight),
+            PlayerSize,
+            moveDirection,
+            moveDistance);
     }
 
     /**
@@ -118,28 +146,36 @@ public class Player : MonoBehaviour
         }
         
         float interactDistance = 2.0f;
-        if (Physics.Raycast(transform.position, _lastInteractDirection, 
+        
+        // Check for collision with counters
+        if (!Physics.Raycast(transform.position, _lastInteractDirection,
                 out RaycastHit raycastHit, interactDistance, countersLayerMask))
         {
-            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
-            {
-                //clearCounter.Interact();
-            }
+            SetSelectedCounter(null);
+            return;
+        }
+
+        // Check if collided object is a ClearCounter
+        if (!raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+        {
+            SetSelectedCounter(null);
+            return;
+        }
+        
+        if (clearCounter != _selectedCounter)
+        {
+            SetSelectedCounter(clearCounter);
         }
     }
 
-    /**
-     * Uses Physics.CapsuleCast to check if player movement along the inputted Vector3
-     * collides with anything during its movement.
-     */
-    private bool MovementCollides(Vector3 moveDirection, float moveDistance)
+    private void SetSelectedCounter(ClearCounter selectedCounter)
     {
-        return Physics.CapsuleCast(
-            transform.position,
-            transform.position + Vector3.up * PlayerHeight,
-            PlayerSize,
-            moveDirection,
-            moveDistance);
+        _selectedCounter = selectedCounter;
+        
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangeEventArgs
+        {
+            SelectedCounter = _selectedCounter
+        });
     }
 
     public bool IsWalking()

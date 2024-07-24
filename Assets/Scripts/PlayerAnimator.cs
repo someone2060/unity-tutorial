@@ -11,6 +11,7 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private Player player;
     
     private Animator _animator;
+    private static readonly int Walking = Animator.StringToHash(IsWalking);
 
     private void Awake()
     {
@@ -19,6 +20,6 @@ public class PlayerAnimator : MonoBehaviour
 
     private void Update()
     {
-        _animator.SetBool(IsWalking, player.IsWalking());
+        _animator.SetBool(Walking, player.IsWalking());
     }
 }
