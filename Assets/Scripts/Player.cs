@@ -110,7 +110,6 @@ public class Player : MonoBehaviour
         }
 
         _isWalking = (moveDirection != Vector3.zero) && canMove;
-        Debug.Log(_isWalking);
 
         var rotateSpeed = 10.0f;
         transform.forward = Vector3.Slerp(
