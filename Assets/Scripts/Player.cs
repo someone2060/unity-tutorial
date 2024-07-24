@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Vector2 = UnityEngine.Vector2;
@@ -15,6 +16,8 @@ public class Player : MonoBehaviour
     
     private bool _isWalking;
     private Vector3 _lastInteractDirection;
+    /** Current counter that player can interact with */
+    private ClearCounter _selectedCounter;
     
     private const float PlayerSize = 0.7f;
     private const float PlayerHeight = 2.0f;
@@ -26,23 +29,9 @@ public class Player : MonoBehaviour
 
     private void GameInput_OnInteractAction(object sender, EventArgs e)
     {
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
-
-        Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
-
-        if (moveDirection != Vector3.zero)
+        if (_selectedCounter != null)
         {
-            _lastInteractDirection = moveDirection;
-        }
-        
-        float interactDistance = 2.0f;
-        if (Physics.Raycast(transform.position, _lastInteractDirection, 
-                out RaycastHit raycastHit, interactDistance, countersLayerMask))
-        {
-            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
-            {
-                clearCounter.Interact();
-            }
+            _selectedCounter.Interact();
         }
     }
 
@@ -65,7 +54,8 @@ public class Player : MonoBehaviour
         
         bool canMove = !MovementCollides(moveDirection, moveDistance);
 
-        // If unable to move, check for movement independently along X-axis or Z-axis
+        // If unable to move in wanted direction,
+        // check for movement along X-axis or Z-axis.
         if (!canMove)
         {
             do
@@ -90,6 +80,7 @@ public class Player : MonoBehaviour
             } while (false);
         }
         
+        // Able to fully move in wanted direction
         if (canMove)
         {
             transform.position += moveDirection * moveDistance;
@@ -118,13 +109,25 @@ public class Player : MonoBehaviour
         }
         
         float interactDistance = 2.0f;
-        if (Physics.Raycast(transform.position, _lastInteractDirection, 
+        
+        // Check for collision with counters
+        if (!Physics.Raycast(transform.position, _lastInteractDirection,
                 out RaycastHit raycastHit, interactDistance, countersLayerMask))
         {
-            if (raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
-            {
-                //clearCounter.Interact();
-            }
+            _selectedCounter = null;
+            return;
+        }
+
+        // Check if collided object is a ClearCounter
+        if (!raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+        {
+            _selectedCounter = null;
+            return;
+        }
+        
+        if (clearCounter != _selectedCounter)
+        {
+            _selectedCounter = clearCounter;
         }
     }
 
