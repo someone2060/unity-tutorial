@@ -100,7 +100,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Debug.Log("-");
+            //Debug.Log("-"); DEBUG
         }
     }
 
