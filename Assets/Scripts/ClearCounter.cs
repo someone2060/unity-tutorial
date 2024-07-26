@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class ClearCounter : MonoBehaviour
+public class ClearCounter : MonoBehaviour, IKitchenObjectParent
 {
     [SerializeField] private KitchenObjectSO kitchenObjectSO;
     [SerializeField] private Transform counterTopPoint;
@@ -13,30 +13,15 @@ public class ClearCounter : MonoBehaviour
     
     private KitchenObject _kitchenObject;
 
-    public Transform GetCounterTopPoint()
-    {
-        return counterTopPoint;
-    }
+    public Transform GetKitchenObjectFollowTransform() => counterTopPoint;
 
-    public KitchenObject GetKitchenObject()
-    {
-        return _kitchenObject;
-    }
+    public KitchenObject GetKitchenObject() => _kitchenObject;
 
-    public void SetKitchenObject(KitchenObject kitchenObject)
-    {
-        _kitchenObject = kitchenObject;
-    }
+    public void SetKitchenObject(KitchenObject kitchenObject) => _kitchenObject = kitchenObject;
 
-    public void ClearKitchenObject()
-    {
-        _kitchenObject = null;
-    }
+    public void ClearKitchenObject() => _kitchenObject = null;
 
-    public bool HasKitchenObject()
-    {
-        return _kitchenObject is not null;
-    }
+    public bool HasKitchenObject() => _kitchenObject is not null;
 
     private void Update()
     {
@@ -47,19 +32,20 @@ public class ClearCounter : MonoBehaviour
                 return;
             }
             
-            _kitchenObject.SetClearCounter(secondClearCounter);
+            _kitchenObject.SetKitchenObjectParent(secondClearCounter);
         }
     }
 
-    public void Interact()
+    public void Interact(Player player)
     {
         if (_kitchenObject is null)
         {
             Transform kitchenObjectTransform = Instantiate(kitchenObjectSO.prefab, counterTopPoint);
-            kitchenObjectTransform.GetComponent<KitchenObject>().SetClearCounter(this);
+            kitchenObjectTransform.GetComponent<KitchenObject>().SetKitchenObjectParent(this);
             return;
         }
         
-        Debug.Log(_kitchenObject.GetClearCounter());
+        //_kitchenObject.SetKitchenObjectParent(player);
+        Debug.Log(_kitchenObject.GetKitchenObjectParent());
     }
 }

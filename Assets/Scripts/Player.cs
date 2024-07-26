@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
     {
         if (_selectedCounter is not null)
         {
-            _selectedCounter.Interact();
+            _selectedCounter.Interact(this);
         }
     }
 
