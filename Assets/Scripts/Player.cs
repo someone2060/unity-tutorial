@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance is not null)
         {
             Debug.LogError("There is more than one Player instance!");
         }
@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
 
     private void GameInput_OnInteractAction(object sender, EventArgs e)
     {
-        if (_selectedCounter != null)
+        if (_selectedCounter is not null)
         {
             _selectedCounter.Interact();
         }
