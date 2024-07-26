@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerAnimator : MonoBehaviour
+public class PlayerVisual : MonoBehaviour
 {
     private const string IsWalking = "IsWalking";
 
