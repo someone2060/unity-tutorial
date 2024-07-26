@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17fc0b27ca0456548b14d85a634a317e, type: 3}
   m_Name: MeatPattyUncooked
   m_EditorClassIdentifier: 
-  prefab: {fileID: 7888895487596843153, guid: 8d1259f841d85c44fa14dd3764ec6938, type: 3}
-  sprite: {fileID: 21300000, guid: da2d04fe27b94e34ea0b624569b48a6f, type: 3}
-  objectName: Cheese Block
+  prefab: {fileID: 7888895487596843153, guid: b5f85f795ab8b5b48b1993a3a7c058af, type: 3}
+  sprite: {fileID: 21300000, guid: aa1bacc24dde76e47b2ec0dd4e82385b, type: 3}
+  objectName: Meat Patty (Uncooked)
