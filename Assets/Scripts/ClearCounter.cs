@@ -6,8 +6,22 @@ using UnityEngine.Serialization;
 
 public class ClearCounter : BaseCounter
 {
+    [SerializeField] private KitchenObjectSO _kitchenObjectSO;
+    
     public override void Interact(Player player)
     {
-        // code
+        if (HasKitchenObject())
+        {
+            if (!player.HasKitchenObject())
+            {
+                GetKitchenObject().SetKitchenObjectParent(player);
+            }
+            return;
+        }
+
+        if (player.HasKitchenObject())
+        {
+            player.GetKitchenObject().SetKitchenObjectParent(this);
+        }
     }
 }
