@@ -13,16 +13,6 @@ public class ClearCounter : MonoBehaviour, IKitchenObjectParent
     
     private KitchenObject _kitchenObject;
 
-    public Transform GetKitchenObjectFollowTransform() => counterTopPoint;
-
-    public KitchenObject GetKitchenObject() => _kitchenObject;
-
-    public void SetKitchenObject(KitchenObject kitchenObject) => _kitchenObject = kitchenObject;
-
-    public void ClearKitchenObject() => _kitchenObject = null;
-
-    public bool HasKitchenObject() => _kitchenObject is not null;
-
     private void Update()
     {
         if (testing && Input.GetKeyDown(KeyCode.T))
@@ -45,7 +35,17 @@ public class ClearCounter : MonoBehaviour, IKitchenObjectParent
             return;
         }
         
-        //_kitchenObject.SetKitchenObjectParent(player);
         Debug.Log(_kitchenObject.GetKitchenObjectParent());
+        _kitchenObject.SetKitchenObjectParent(player);
     }
+
+    public Transform GetKitchenObjectFollowTransform() => counterTopPoint;
+
+    public KitchenObject GetKitchenObject() => _kitchenObject;
+
+    public void SetKitchenObject(KitchenObject kitchenObject) => _kitchenObject = kitchenObject;
+
+    public void ClearKitchenObject() => _kitchenObject = null;
+
+    public bool HasKitchenObject() => _kitchenObject is not null;
 }

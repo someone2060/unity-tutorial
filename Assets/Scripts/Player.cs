@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IKitchenObjectParent
 {
     public static Player Instance { get; private set; }
     
@@ -17,16 +17,18 @@ public class Player : MonoBehaviour
     {
         public ClearCounter SelectedCounter;
     }
-    
+
     [SerializeField] private float moveSpeed = 1.0f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
-    
+    [SerializeField] private Transform kitchenObjectHoldPoint;
+
     private bool _isWalking;
     private Vector3 _lastInteractDirection;
     /** Current counter that player can interact with */
     private ClearCounter _selectedCounter;
-    
+    private KitchenObject _kitchenObject;
+
     private const float PlayerSize = 0.7f;
     private const float PlayerHeight = 2.0f;
 
@@ -178,8 +180,15 @@ public class Player : MonoBehaviour
         });
     }
 
-    public bool IsWalking()
-    {
-        return _isWalking;
-    }
+    public bool IsWalking() => _isWalking;
+
+    public Transform GetKitchenObjectFollowTransform() => kitchenObjectHoldPoint;
+
+    public KitchenObject GetKitchenObject() => _kitchenObject;
+
+    public void SetKitchenObject(KitchenObject kitchenObject) => _kitchenObject = kitchenObject;
+
+    public void ClearKitchenObject() => _kitchenObject = null;
+
+    public bool HasKitchenObject() => _kitchenObject is not null;
 }
