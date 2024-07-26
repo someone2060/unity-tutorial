@@ -18,6 +18,10 @@ public class ClearCounter : MonoBehaviour
             kitchenObjectTransform.localPosition = Vector3.zero;
             
             _kitchenObject = kitchenObjectTransform.GetComponent<KitchenObject>();
+            _kitchenObject.SetClearCounter(this);
+            return;
         }
+        
+        Debug.Log(_kitchenObject.GetClearCounter());
     }
 }
