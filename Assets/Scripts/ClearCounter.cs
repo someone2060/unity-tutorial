@@ -24,4 +24,6 @@ public class ClearCounter : BaseCounter
             player.GetKitchenObject().SetKitchenObjectParent(this);
         }
     }
+    
+    public override void InteractAlternate(Player player) { }
 }
