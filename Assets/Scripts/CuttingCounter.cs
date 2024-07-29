@@ -9,19 +9,20 @@ public class CuttingCounter : BaseCounter
     
     public override void Interact(Player player)
     {
-        if (HasKitchenObject())
+        if (HasKitchenObject()) // Counter has KitchenObject
         {
-            if (!player.HasKitchenObject())
+            if (!player.HasKitchenObject()) // Player doesn't have KitchenObject
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
             }
             return;
         }
 
-        if (player.HasKitchenObject())
-        {
-            player.GetKitchenObject().SetKitchenObjectParent(this);
-        }
+        if (!player.HasKitchenObject()) return; // Player doesn't have KitchenObject
+
+        if (!HasRecipeWithInput(player.GetKitchenObject().GetKitchenObjectSO())) return; // Player placing object that isn't CuttingRecipeSO.input
+        
+        player.GetKitchenObject().SetKitchenObjectParent(this);
     }
 
     public override void InteractAlternate(Player player)
@@ -29,10 +30,18 @@ public class CuttingCounter : BaseCounter
         if (HasKitchenObject())
         {
             KitchenObjectSO outputKitchenObjectSO = GetOutputKitchenObject(GetKitchenObject().GetKitchenObjectSO());
+            
+            if (outputKitchenObjectSO is null) return;
+            
             GetKitchenObject().DestroySelf();
 
             KitchenObject.SpawnKitchenObject(outputKitchenObjectSO, this);
         }
+    }
+
+    private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
+    {
+        return (GetOutputKitchenObject(inputKitchenObjectSO) is not null);
     }
 
     private KitchenObjectSO GetOutputKitchenObject(KitchenObjectSO inputKitchenObjectSO)
@@ -45,6 +54,6 @@ public class CuttingCounter : BaseCounter
             }
         }
 
-        return inputKitchenObjectSO;
+        return null;
     }
 }
