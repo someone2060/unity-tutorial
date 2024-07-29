@@ -80,27 +80,21 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             do
             {
                 // Test X movement
-                if (moveDirection.x != 0)
+                Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
+                canMove = (moveDirection.x != 0) && !MovementCollides(moveDirectionX, moveDistance);
+                if (canMove)
                 {
-                    Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-                    canMove = !MovementCollides(moveDirectionX, moveDistance);
-                    if (canMove)
-                    {
-                        moveDirection = moveDirectionX;
-                        break;
-                    }
+                    moveDirection = moveDirectionX;
+                    break;
                 }
 
                 // Test Z movement
-                if (moveDirection.z != 0)
+                Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
+                canMove = (moveDirection.z != 0) && !MovementCollides(moveDirectionZ, moveDistance);
+                if (canMove)
                 {
-                    Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                    canMove = !MovementCollides(moveDirectionZ, moveDistance);
-                    if (canMove)
-                    {
-                        moveDirection = moveDirectionZ;
-                        break;
-                    }
+                    moveDirection = moveDirectionZ;
+                    break;
                 }
             } while (false);
         }
