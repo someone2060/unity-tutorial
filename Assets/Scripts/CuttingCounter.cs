@@ -41,16 +41,25 @@ public class CuttingCounter : BaseCounter
 
     private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
     {
-        return (GetOutputKitchenObject(inputKitchenObjectSO) is not null);
+        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(inputKitchenObjectSO);
+        return cuttingRecipeSO is not null;
     }
 
     private KitchenObjectSO GetOutputKitchenObject(KitchenObjectSO inputKitchenObjectSO)
+    {
+        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(inputKitchenObjectSO);
+        
+        if (cuttingRecipeSO is not null) return cuttingRecipeSO.output;
+        return null;
+    }
+
+    private CuttingRecipeSO GetCuttingRecipeSO(KitchenObjectSO inputKitchenObjectSO)
     {
         foreach (CuttingRecipeSO cuttingRecipeSO in cuttingRecipeSOArray)
         {
             if (inputKitchenObjectSO == cuttingRecipeSO.input)
             {
-                return cuttingRecipeSO.output;
+                return cuttingRecipeSO;
             }
         }
 
