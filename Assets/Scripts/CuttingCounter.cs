@@ -6,6 +6,8 @@ using UnityEngine.Serialization;
 public class CuttingCounter : BaseCounter
 {
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
+
+    private int _cuttingProgress;
     
     public override void Interact(Player player)
     {
@@ -21,27 +23,35 @@ public class CuttingCounter : BaseCounter
         if (!player.HasKitchenObject()) return; // Player doesn't have KitchenObject
 
         if (!HasRecipeWithInput(player.GetKitchenObject().GetKitchenObjectSO())) return; // Player placing object that isn't CuttingRecipeSO.input
-        
+
+        _cuttingProgress = 0;
         player.GetKitchenObject().SetKitchenObjectParent(this);
     }
 
     public override void InteractAlternate(Player player)
     {
-        if (HasKitchenObject())
+        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
+        if (HasKitchenObject() && HasRecipeWithInput(cuttingRecipeSO))
         {
-            KitchenObjectSO outputKitchenObjectSO = GetOutputKitchenObject(GetKitchenObject().GetKitchenObjectSO());
+            _cuttingProgress++;
             
-            if (outputKitchenObjectSO is null) return;
-            
-            GetKitchenObject().DestroySelf();
+            if (_cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
+            {
+                GetKitchenObject().DestroySelf();
 
-            KitchenObject.SpawnKitchenObject(outputKitchenObjectSO, this);
+                KitchenObject.SpawnKitchenObject(cuttingRecipeSO.output, this);
+            }
         }
     }
 
     private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
     {
         CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(inputKitchenObjectSO);
+        return cuttingRecipeSO is not null;
+    }
+
+    private bool HasRecipeWithInput(CuttingRecipeSO cuttingRecipeSO)
+    {
         return cuttingRecipeSO is not null;
     }
 
