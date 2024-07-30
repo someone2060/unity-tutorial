@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 
 public class CuttingCounter : BaseCounter
 {
+    public event EventHandler OnCut;
     public event EventHandler<OnProgressChangedEventArgs> OnProgressChanged;
     public class OnProgressChangedEventArgs : EventArgs
     {
@@ -59,6 +60,7 @@ public class CuttingCounter : BaseCounter
         {
             ProgressNormalized = (float)_cuttingProgress / cuttingRecipeSO.cuttingProgressMax
         });
+        OnCut?.Invoke(this, EventArgs.Empty);
             
         // Check if cutting finished
         if (_cuttingProgress < cuttingRecipeSO.cuttingProgressMax) return;

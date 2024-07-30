@@ -10,12 +10,12 @@ public class ContainerCounterVisual : MonoBehaviour
     
     [SerializeField] private ContainerCounter containerCounter;
     
-    private Animator animator;
+    private Animator _animator;
     private static readonly int OpenClose = Animator.StringToHash(OPEN_CLOSE);
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
     }
 
     private void Start()
@@ -25,6 +25,6 @@ public class ContainerCounterVisual : MonoBehaviour
 
     private void ContainerCounter_OnPlayerGrabbedObject(object sender, EventArgs e)
     {
-        animator.SetTrigger(OpenClose);
+        _animator.SetTrigger(OpenClose);
     }
 }
