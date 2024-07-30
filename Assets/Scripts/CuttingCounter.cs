@@ -1,10 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
 public class CuttingCounter : BaseCounter
 {
+    public event EventHandler<OnProgressChangedEventArgs> OnProgressChanged;
+    public class OnProgressChangedEventArgs : EventArgs
+    {
+        public float ProgressNormalized;
+    }
+    
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
     private int _cuttingProgress;
@@ -22,10 +30,19 @@ public class CuttingCounter : BaseCounter
 
         if (!player.HasKitchenObject()) return; // Player doesn't have KitchenObject
 
-        if (!HasRecipeWithInput(player.GetKitchenObject().GetKitchenObjectSO())) return; // Player placing object that isn't CuttingRecipeSO.input
+        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
+        // Player placing object that isn't CuttingRecipeSO.input
+        if (!HasRecipeWithInput(cuttingRecipeSO)) return;
 
-        _cuttingProgress = 0;
+        // Move KitchenObject to counter, reset cutting progress
         player.GetKitchenObject().SetKitchenObjectParent(this);
+        _cuttingProgress = 0;
+        
+        // Send event
+        OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+        {
+            ProgressNormalized = (float)_cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+        });
     }
 
     public override void InteractAlternate(Player player)
@@ -34,7 +51,14 @@ public class CuttingCounter : BaseCounter
         if (HasKitchenObject() && HasRecipeWithInput(cuttingRecipeSO))
         {
             _cuttingProgress++;
+        
+            // Send event
+            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+            {
+                ProgressNormalized = (float)_cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+            });
             
+            // Check if cutting finished
             if (_cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
             {
                 GetKitchenObject().DestroySelf();
