@@ -47,25 +47,24 @@ public class CuttingCounter : BaseCounter
 
     public override void InteractAlternate(Player player)
     {
-        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
-        if (HasKitchenObject() && HasRecipeWithInput(cuttingRecipeSO))
-        {
-            _cuttingProgress++;
+        if (!HasKitchenObject()) return;
         
-            // Send event
-            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
-            {
-                ProgressNormalized = (float)_cuttingProgress / cuttingRecipeSO.cuttingProgressMax
-            });
+        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
+        if (!HasRecipeWithInput(cuttingRecipeSO)) return;
+        
+        _cuttingProgress++;
+        
+        // Send event
+        OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+        {
+            ProgressNormalized = (float)_cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+        });
             
-            // Check if cutting finished
-            if (_cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
-            {
-                GetKitchenObject().DestroySelf();
-
-                KitchenObject.SpawnKitchenObject(cuttingRecipeSO.output, this);
-            }
-        }
+        // Check if cutting finished
+        if (_cuttingProgress < cuttingRecipeSO.cuttingProgressMax) return;
+        
+        GetKitchenObject().DestroySelf();
+        KitchenObject.SpawnKitchenObject(cuttingRecipeSO.output, this);
     }
 
     private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
