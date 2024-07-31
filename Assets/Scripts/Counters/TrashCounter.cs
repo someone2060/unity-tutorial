@@ -6,11 +6,10 @@ public class TrashCounter : BaseCounter
 {
     public override void Interact(Player player)
     {
-        throw new System.NotImplementedException();
+        if (!player.HasKitchenObject()) return;
+        
+        player.GetKitchenObject().DestroySelf();
     }
 
-    public override void InteractAlternate(Player player)
-    {
-        throw new System.NotImplementedException();
-    }
+    public override void InteractAlternate(Player player) { }
 }
