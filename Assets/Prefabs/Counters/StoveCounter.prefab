@@ -381,3 +381,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   counterTopPoint: {fileID: 810526400465860566}
+  fryingRecipeSOArray:
+  - {fileID: 11400000, guid: bfcb1a18808cf5841bb456ce62c1818e, type: 2}
+  - {fileID: 11400000, guid: 49682320d566320448ab90e2c671ceaa, type: 2}
