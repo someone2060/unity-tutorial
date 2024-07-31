@@ -3,10 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 
 public class CuttingCounter : BaseCounter
 {
+    private enum State
+    {
+        Idle,
+        Cutting,
+        Cut
+    }
+    
     public event EventHandler OnCut;
     public event EventHandler<OnProgressChangedEventArgs> OnProgressChanged;
     public class OnProgressChangedEventArgs : EventArgs
@@ -30,10 +38,7 @@ public class CuttingCounter : BaseCounter
                 GetKitchenObject().SetKitchenObjectParent(player);
         
                 // Send event
-                OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
-                {
-                    ProgressNormalized = 0.0f
-                });
+                UpdateProgress(0.0f);
             }
             return;
         }
@@ -50,11 +55,7 @@ public class CuttingCounter : BaseCounter
         _secondsToNextCut = (1.0f / _cuttingRecipeSO.cutsNeeded) * _cuttingRecipeSO.secondsToCut;
         _cuts = 0;
         
-        // Send event
-        OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
-        {
-            ProgressNormalized = 0.0f
-        });
+        UpdateProgress(0.0f);
     }
 
     public override void InteractAlternate(Player player)
@@ -72,10 +73,7 @@ public class CuttingCounter : BaseCounter
             _cuts = currentCuts;
             
             // Send event
-            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
-            {
-                ProgressNormalized = (float)_cuts / _cuttingRecipeSO.cutsNeeded
-            });
+            UpdateProgress((float)_cuts / _cuttingRecipeSO.cutsNeeded);
             OnCut?.Invoke(this, EventArgs.Empty);
         }
             
@@ -85,6 +83,18 @@ public class CuttingCounter : BaseCounter
         GetKitchenObject().DestroySelf();
         KitchenObject.SpawnKitchenObject(_cuttingRecipeSO.output, this);
         _cuttingRecipeSO = GetCuttingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
+    }
+
+    /**
+     * Sends OnProgressChanged event with cutting progress.
+     * @param progress is a range from 0-1, with 0 as no progress and 1 as full progress.
+     */
+    private void UpdateProgress(float progress)
+    {
+        OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+        {
+            ProgressNormalized = progress
+        });
     }
 
     private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
