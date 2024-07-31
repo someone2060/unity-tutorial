@@ -16,7 +16,9 @@ public class CuttingCounter : BaseCounter
     
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
-    private int _cuttingProgress;
+    private float _cuttingProgress;
+    private float _secondsToNextCut;
+    private int _cuts;
     
     public override void Interact(Player player)
     {
@@ -25,6 +27,12 @@ public class CuttingCounter : BaseCounter
             if (!player.HasKitchenObject()) // Player doesn't have KitchenObject
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
+        
+                // Send event
+                OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+                {
+                    ProgressNormalized = 0.0f
+                });
             }
             return;
         }
@@ -37,12 +45,14 @@ public class CuttingCounter : BaseCounter
 
         // Move KitchenObject to counter, reset cutting progress
         player.GetKitchenObject().SetKitchenObjectParent(this);
-        _cuttingProgress = 0;
+        _cuttingProgress = 0.0f;
+        _secondsToNextCut = (1.0f / cuttingRecipeSO.cutsNeeded) * cuttingRecipeSO.secondsToCut;
+        _cuts = 0;
         
         // Send event
         OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
         {
-            ProgressNormalized = (float)_cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+            ProgressNormalized = 0.0f
         });
     }
 
@@ -53,17 +63,24 @@ public class CuttingCounter : BaseCounter
         CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
         if (!HasRecipeWithInput(cuttingRecipeSO)) return;
         
-        _cuttingProgress++;
+        _cuttingProgress += Time.deltaTime;
+
+        int currentCuts = (int)(_cuttingProgress / _secondsToNextCut);
         
-        // Send event
-        OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+        if (_cuts != currentCuts) // Update visuals
         {
-            ProgressNormalized = (float)_cuttingProgress / cuttingRecipeSO.cuttingProgressMax
-        });
-        OnCut?.Invoke(this, EventArgs.Empty);
+            _cuts = currentCuts;
+            
+            // Send event
+            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+            {
+                ProgressNormalized = (float)_cuts / cuttingRecipeSO.cutsNeeded
+            });
+            OnCut?.Invoke(this, EventArgs.Empty);
+        }
             
         // Check if cutting finished
-        if (_cuttingProgress < cuttingRecipeSO.cuttingProgressMax) return;
+        if (_cuttingProgress < cuttingRecipeSO.secondsToCut) return;
         
         GetKitchenObject().DestroySelf();
         KitchenObject.SpawnKitchenObject(cuttingRecipeSO.output, this);
