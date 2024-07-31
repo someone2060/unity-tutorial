@@ -7,9 +7,10 @@ using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
-    public event EventHandler OnInteractAction;
-    public event EventHandler OnInteractAlternateAction;
+    public event EventHandler OnInteractPerformed;
     private PlayerInputActions _playerInputActions;
+
+    private bool _interactAlternateHeld;
 
     private void Awake()
     {
@@ -18,18 +19,28 @@ public class GameInput : MonoBehaviour
 
         _playerInputActions.Player.Interact.performed += Interact_performed;
         _playerInputActions.Player.InteractAlternate.performed += InteractAlternate_performed;
+        _playerInputActions.Player.InteractAlternate.canceled += InteractAlternate_canceled;
+
+        _interactAlternateHeld = false;
+    }
+
+    public bool GetInteractAlternateHeld() => _interactAlternateHeld;
+
+    private void InteractAlternate_canceled(InputAction.CallbackContext obj)
+    {
+        _interactAlternateHeld = false;
     }
 
     private void InteractAlternate_performed(InputAction.CallbackContext obj)
     {
-        OnInteractAlternateAction?.Invoke(this, EventArgs.Empty);
+        _interactAlternateHeld = true;
     }
 
     private void Interact_performed(InputAction.CallbackContext obj)
     {
-        OnInteractAction?.Invoke(this, EventArgs.Empty);
+        OnInteractPerformed?.Invoke(this, EventArgs.Empty);
     }
-    
+
     public Vector2 GetMovementVectorNormalized()
     {
         Vector2 inputVector = _playerInputActions.Player.Move.ReadValue<Vector2>();
