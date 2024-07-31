@@ -18,7 +18,6 @@ public class StoveCounter : BaseCounter
 
         _fryingTimer += Time.deltaTime;
 
-        _fryingRecipeSO = GetFryingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
         if (!HasRecipeWithInput(_fryingRecipeSO)) return;
 
         // Not fried
@@ -28,6 +27,7 @@ public class StoveCounter : BaseCounter
         Debug.Log("Fried!");
         GetKitchenObject().DestroySelf();
         KitchenObject.SpawnKitchenObject(_fryingRecipeSO.output, this);
+        _fryingRecipeSO = GetFryingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
     }
 
     public override void Interact(Player player)
@@ -43,11 +43,13 @@ public class StoveCounter : BaseCounter
 
         if (!player.HasKitchenObject()) return; // Player doesn't have KitchenObject
 
-        FryingRecipeSO fryingRecipeSO = GetFryingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
+        _fryingRecipeSO = GetFryingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
         // Player placing object that isn't CuttingRecipeSO.input
-        if (!HasRecipeWithInput(fryingRecipeSO)) return;
+        if (!HasRecipeWithInput(_fryingRecipeSO)) return;
 
         player.GetKitchenObject().SetKitchenObjectParent(this);
+        
+        _fryingTimer = 0.0f;
     }
 
     public override void InteractAlternate(Player player) { }
