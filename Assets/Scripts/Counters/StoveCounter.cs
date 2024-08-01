@@ -17,7 +17,7 @@ public class StoveCounter : BaseCounter
     [SerializeField] private FryingRecipeSO[] fryingRecipeSOArray;
     [SerializeField] private BurningRecipeSO[] burningRecipeSOArray;
 
-    private State state;
+    private State _state;
     private float _fryingTimer;
     private FryingRecipeSO _fryingRecipeSO;
     private float _burningTimer;
@@ -25,14 +25,14 @@ public class StoveCounter : BaseCounter
 
     private void Start()
     {
-        state = State.Idle;
+        _state = State.Idle;
     }
 
     private void Update()
     {
         if (!HasKitchenObject()) return; // Counter doesn't have KitchenObject
         
-        switch (state)
+        switch (_state)
         {
             case State.Idle:
                 break;
@@ -44,7 +44,7 @@ public class StoveCounter : BaseCounter
                 GetKitchenObject().DestroySelf();
                 KitchenObject.SpawnKitchenObject(_fryingRecipeSO.output, this);
 
-                state = State.Fried;
+                _state = State.Fried;
                 _burningTimer = 0.0f;
                 _burningRecipeSO = GetBurningRecipeSO(GetKitchenObject().GetKitchenObjectSO());
                 break;
@@ -56,7 +56,7 @@ public class StoveCounter : BaseCounter
                 GetKitchenObject().DestroySelf();
                 KitchenObject.SpawnKitchenObject(_burningRecipeSO.output, this);
                 
-                state = State.Burned;
+                _state = State.Burned;
                 break;
             case State.Burned:
                 break;
@@ -71,7 +71,7 @@ public class StoveCounter : BaseCounter
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
 
-                state = State.Idle;
+                _state = State.Idle;
             }
             return;
         }
@@ -84,7 +84,7 @@ public class StoveCounter : BaseCounter
 
         player.GetKitchenObject().SetKitchenObjectParent(this);
         
-        state = State.Frying;
+        _state = State.Frying;
         _fryingTimer = 0.0f;
     }
 

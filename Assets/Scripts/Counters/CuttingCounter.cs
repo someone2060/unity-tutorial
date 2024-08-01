@@ -24,11 +24,17 @@ public class CuttingCounter : BaseCounter
     
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
+    private State _state;
     private float _cuttingTimer;
     private float _secondsToNextCut;
     private int _cuts;
     private CuttingRecipeSO _cuttingRecipeSO;
-    
+
+    private void Start()
+    {
+        _state = State.Idle;
+    }
+
     public override void Interact(Player player)
     {
         if (HasKitchenObject()) // Counter has KitchenObject
@@ -37,7 +43,8 @@ public class CuttingCounter : BaseCounter
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
         
-                // Send event
+                _state = State.Idle;
+
                 UpdateProgress(0.0f);
             }
             return;
@@ -51,6 +58,8 @@ public class CuttingCounter : BaseCounter
 
         // Move KitchenObject to counter, reset cutting progress
         player.GetKitchenObject().SetKitchenObjectParent(this);
+
+        _state = State.Cutting;
         _cuttingTimer = 0.0f;
         _secondsToNextCut = (1.0f / _cuttingRecipeSO.cutsNeeded) * _cuttingRecipeSO.secondsToCut;
         _cuts = 0;
@@ -61,28 +70,35 @@ public class CuttingCounter : BaseCounter
     public override void InteractAlternate(Player player)
     {
         if (!HasKitchenObject()) return;
-        
-        if (!HasRecipeWithInput(_cuttingRecipeSO)) return;
-        
-        _cuttingTimer += Time.deltaTime;
 
-        int currentCuts = (int)(_cuttingTimer / _secondsToNextCut);
-        
-        if (_cuts != currentCuts) // Update visuals
+        switch (_state)
         {
-            _cuts = currentCuts;
-            
-            // Send event
-            UpdateProgress((float)_cuts / _cuttingRecipeSO.cutsNeeded);
-            OnCut?.Invoke(this, EventArgs.Empty);
-        }
-            
-        // Cutting not finished
-        if (_cuttingTimer < _cuttingRecipeSO.secondsToCut) return;
+            case State.Idle:
+                break;
+            case State.Cutting:
+                _cuttingTimer += Time.deltaTime;
+
+                var currentCuts = (int)(_cuttingTimer / _secondsToNextCut);
         
-        GetKitchenObject().DestroySelf();
-        KitchenObject.SpawnKitchenObject(_cuttingRecipeSO.output, this);
-        _cuttingRecipeSO = GetCuttingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
+                if (_cuts != currentCuts) // Update visuals
+                {
+                    _cuts = currentCuts;
+            
+                    UpdateProgress((float)_cuts / _cuttingRecipeSO.cutsNeeded);
+                    OnCut?.Invoke(this, EventArgs.Empty);
+                }
+            
+                // Cutting not finished
+                if (_cuttingTimer < _cuttingRecipeSO.secondsToCut) return;
+        
+                GetKitchenObject().DestroySelf();
+                KitchenObject.SpawnKitchenObject(_cuttingRecipeSO.output, this);
+
+                _state = State.Cut;
+                break;
+            case State.Cut:
+                break;
+        }
     }
 
     /**
