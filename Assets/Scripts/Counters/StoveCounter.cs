@@ -6,7 +6,13 @@ using UnityEngine.Serialization;
 
 public class StoveCounter : BaseCounter
 {
-    private enum State
+    public event EventHandler<OnStateChangedEventArgs> OnStateChanged;
+    public class OnStateChangedEventArgs : EventArgs
+    {
+        public State State;
+    }
+
+    public enum State
     {
         Idle,
         Frying,
@@ -23,7 +29,7 @@ public class StoveCounter : BaseCounter
     private float _burningTimer;
     private BurningRecipeSO _burningRecipeSO;
 
-    private void Start()
+    private void Awake()
     {
         _state = State.Idle;
     }
@@ -47,6 +53,8 @@ public class StoveCounter : BaseCounter
                 _state = State.Fried;
                 _burningTimer = 0.0f;
                 _burningRecipeSO = GetBurningRecipeSO(GetKitchenObject().GetKitchenObjectSO());
+                
+                UpdateState(_state);
                 break;
             case State.Fried:
                 _burningTimer += Time.deltaTime;
@@ -57,6 +65,8 @@ public class StoveCounter : BaseCounter
                 KitchenObject.SpawnKitchenObject(_burningRecipeSO.output, this);
                 
                 _state = State.Burned;
+                
+                UpdateState(_state);
                 break;
             case State.Burned:
                 break;
@@ -72,6 +82,8 @@ public class StoveCounter : BaseCounter
                 GetKitchenObject().SetKitchenObjectParent(player);
 
                 _state = State.Idle;
+                
+                UpdateState(_state);
             }
             return;
         }
@@ -86,9 +98,19 @@ public class StoveCounter : BaseCounter
         
         _state = State.Frying;
         _fryingTimer = 0.0f;
+                
+        UpdateState(_state);
     }
 
     public override void InteractAlternate(Player player) { }
+
+    private void UpdateState(State state)
+    {
+        OnStateChanged?.Invoke(this, new OnStateChangedEventArgs
+        {
+            State = state
+        });
+    }
 
     private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
     {

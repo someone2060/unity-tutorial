@@ -30,7 +30,7 @@ public class CuttingCounter : BaseCounter
     private int _cuts;
     private CuttingRecipeSO _cuttingRecipeSO;
 
-    private void Start()
+    private void Awake()
     {
         _state = State.Idle;
     }
