@@ -3,23 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter, IHasProgress
 {
-    public event EventHandler OnCut;
-    public event EventHandler<OnProgressChangedEventArgs> OnProgressChanged;
-    public class OnProgressChangedEventArgs : EventArgs
+    private enum State
     {
-        public float ProgressNormalized;
+        Idle,
+        Cutting,
+        Cut
     }
+    
+    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
+    public event EventHandler OnCut;
     
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
-    private float _cuttingProgress;
+    private State _state;
+    private float _cuttingTimer;
     private float _secondsToNextCut;
     private int _cuts;
-    
+    private CuttingRecipeSO _cuttingRecipeSO;
+
+    private void Awake()
+    {
+        _state = State.Idle;
+    }
+
     public override void Interact(Player player)
     {
         if (HasKitchenObject()) // Counter has KitchenObject
@@ -28,62 +39,62 @@ public class CuttingCounter : BaseCounter
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
         
-                // Send event
-                OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
-                {
-                    ProgressNormalized = 0.0f
-                });
+                _state = State.Idle;
+
+                UpdateProgress(0.0f);
             }
             return;
         }
 
         if (!player.HasKitchenObject()) return; // Player doesn't have KitchenObject
 
-        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
+        _cuttingRecipeSO = GetCuttingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
         // Player placing object that isn't CuttingRecipeSO.input
-        if (!HasRecipeWithInput(cuttingRecipeSO)) return;
+        if (!HasRecipeWithInput(_cuttingRecipeSO)) return;
 
         // Move KitchenObject to counter, reset cutting progress
         player.GetKitchenObject().SetKitchenObjectParent(this);
-        _cuttingProgress = 0.0f;
-        _secondsToNextCut = (1.0f / cuttingRecipeSO.cutsNeeded) * cuttingRecipeSO.secondsToCut;
+
+        _state = State.Cutting;
+        _cuttingTimer = 0.0f;
+        _secondsToNextCut = (1.0f / _cuttingRecipeSO.cutsNeeded) * _cuttingRecipeSO.secondsToCut;
         _cuts = 0;
         
-        // Send event
-        OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
-        {
-            ProgressNormalized = 0.0f
-        });
+        UpdateProgress(0.0f);
     }
 
     public override void InteractAlternate(Player player)
     {
         if (!HasKitchenObject()) return;
-        
-        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(GetKitchenObject().GetKitchenObjectSO());
-        if (!HasRecipeWithInput(cuttingRecipeSO)) return;
-        
-        _cuttingProgress += Time.deltaTime;
 
-        int currentCuts = (int)(_cuttingProgress / _secondsToNextCut);
-        
-        if (_cuts != currentCuts) // Update visuals
+        switch (_state)
         {
-            _cuts = currentCuts;
-            
-            // Send event
-            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
-            {
-                ProgressNormalized = (float)_cuts / cuttingRecipeSO.cutsNeeded
-            });
-            OnCut?.Invoke(this, EventArgs.Empty);
-        }
-            
-        // Check if cutting finished
-        if (_cuttingProgress < cuttingRecipeSO.secondsToCut) return;
+            case State.Idle:
+                break;
+            case State.Cutting:
+                _cuttingTimer += Time.deltaTime;
+
+                var currentCuts = (int)(_cuttingTimer / _secondsToNextCut);
         
-        GetKitchenObject().DestroySelf();
-        KitchenObject.SpawnKitchenObject(cuttingRecipeSO.output, this);
+                if (_cuts != currentCuts) // Update visuals
+                {
+                    _cuts = currentCuts;
+            
+                    UpdateProgress((float)_cuts / _cuttingRecipeSO.cutsNeeded);
+                    OnCut?.Invoke(this, EventArgs.Empty);
+                }
+            
+                // Cutting not finished
+                if (_cuttingTimer < _cuttingRecipeSO.secondsToCut) return;
+        
+                GetKitchenObject().DestroySelf();
+                KitchenObject.SpawnKitchenObject(_cuttingRecipeSO.output, this);
+
+                _state = State.Cut;
+                break;
+            case State.Cut:
+                break;
+        }
     }
 
     private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
@@ -116,5 +127,17 @@ public class CuttingCounter : BaseCounter
         }
 
         return null;
+    }
+
+    /**
+     * Sends OnProgressChanged event with cutting progress.
+     * @param progress is a range from 0-1, with 0 as no progress and 1 as full progress.
+     */
+    private void UpdateProgress(float progress)
+    {
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs()
+        {
+            ProgressNormalized = progress
+        });
     }
 }
