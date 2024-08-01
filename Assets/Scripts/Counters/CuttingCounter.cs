@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter, IHasProgress
 {
     private enum State
     {
@@ -15,12 +15,8 @@ public class CuttingCounter : BaseCounter
         Cut
     }
     
+    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
     public event EventHandler OnCut;
-    public event EventHandler<OnProgressChangedEventArgs> OnProgressChanged;
-    public class OnProgressChangedEventArgs : EventArgs
-    {
-        public float ProgressNormalized;
-    }
     
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
@@ -107,7 +103,7 @@ public class CuttingCounter : BaseCounter
      */
     private void UpdateProgress(float progress)
     {
-        OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs()
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs()
         {
             ProgressNormalized = progress
         });

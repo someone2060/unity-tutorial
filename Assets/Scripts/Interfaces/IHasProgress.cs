@@ -8,7 +8,6 @@ using UnityEngine;
  */
 public interface IHasProgress
 {
-    public event EventHandler OnCut;
     public event EventHandler<OnProgressChangedEventArgs> OnProgressChanged;
     public class OnProgressChangedEventArgs : EventArgs
     {
