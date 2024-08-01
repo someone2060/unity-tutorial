@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,7 +31,7 @@ public class ProgressBarUI : MonoBehaviour
     {
         barImage.fillAmount = e.ProgressNormalized;
 
-        if (e.ProgressNormalized == 0f || Mathf.Approximately(e.ProgressNormalized, 1f))
+        if (e.ProgressNormalized == 0f || Math.Abs(e.ProgressNormalized - 1f) < 0.01)
         {
             Hide();
         } else

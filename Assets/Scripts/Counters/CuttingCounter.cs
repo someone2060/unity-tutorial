@@ -97,18 +97,6 @@ public class CuttingCounter : BaseCounter, IHasProgress
         }
     }
 
-    /**
-     * Sends OnProgressChanged event with cutting progress.
-     * @param progress is a range from 0-1, with 0 as no progress and 1 as full progress.
-     */
-    private void UpdateProgress(float progress)
-    {
-        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs()
-        {
-            ProgressNormalized = progress
-        });
-    }
-
     private bool HasRecipeWithInput(KitchenObjectSO inputKitchenObjectSO)
     {
         CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSO(inputKitchenObjectSO);
@@ -139,5 +127,17 @@ public class CuttingCounter : BaseCounter, IHasProgress
         }
 
         return null;
+    }
+
+    /**
+     * Sends OnProgressChanged event with cutting progress.
+     * @param progress is a range from 0-1, with 0 as no progress and 1 as full progress.
+     */
+    private void UpdateProgress(float progress)
+    {
+        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs()
+        {
+            ProgressNormalized = progress
+        });
     }
 }
