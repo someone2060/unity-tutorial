@@ -5,12 +5,14 @@ using UnityEngine;
 
 public class PlatesCounter : BaseCounter
 {
+    public event EventHandler OnPlateSpawned;
+    
     private float _spawnPlateTimer;
     private const float SpawnPlateTimerMax = 4.0f;
     private int _platesSpawned;
     private const int PlatesSpawnedMax = 4;
 
-    public void Awake()
+    private void Awake()
     {
         _platesSpawned = 0;
     }
@@ -26,6 +28,8 @@ public class PlatesCounter : BaseCounter
         if (_platesSpawned >= PlatesSpawnedMax) return; // Max plates spawned
 
         _platesSpawned++;
+        
+        OnPlateSpawned?.Invoke(this, EventArgs.Empty);
     }
 
     public override void Interact(Player player)
