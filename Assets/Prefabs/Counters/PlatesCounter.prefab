@@ -111,6 +111,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   counterTopPoint: {fileID: 3059472509411706059}
+  plateKitchenObjectSO: {fileID: 11400000, guid: fd5e12665a662884e9695354e7423d25,
+    type: 2}
 --- !u!1001 &6358439850495968604
 PrefabInstance:
   m_ObjectHideFlags: 0
