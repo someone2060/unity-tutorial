@@ -9,7 +9,7 @@ public class PlateKitchenObject : KitchenObject
     public event EventHandler<OnIngredientAddedEventArgs> OnIngredientAdded; 
     public class OnIngredientAddedEventArgs : EventArgs
     {
-        public KitchenObject KitchenObject;
+        public KitchenObjectSO KitchenObjectSO;
     }
     
     [SerializeField] private List<KitchenObjectSO> validKitchenObjectSOList;
@@ -31,11 +31,11 @@ public class PlateKitchenObject : KitchenObject
         return true;
     }
 
-    private void InvokeOnIngredientAdded(KitchenObject kitchenObject)
+    private void InvokeOnIngredientAdded(KitchenObjectSO kitchenObjectSO)
     {
         OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs()
         {
-            KitchenObject = kitchenObject
+            KitchenObjectSO = kitchenObjectSO
         });
     }
 }
