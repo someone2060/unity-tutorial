@@ -33,42 +33,43 @@ public class CuttingCounter : BaseCounter, IHasProgress
 
     public override void Interact(Player player)
     {
-        if (HasKitchenObject()) // Counter has KitchenObject
+        if (!HasKitchenObject()) // Counter not holding something
         {
-            if (!player.HasKitchenObject()) // Player doesn't have KitchenObject
-            {
-                GetKitchenObject().SetKitchenObjectParent(player);
-        
-                _state = State.Idle;
+            if (!player.HasKitchenObject()) return; // Player not holding something
 
-                UpdateProgress(0.0f);
-                return;
-            }
+            _cuttingRecipeSO = GetCuttingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
+            // Player placing object that isn't CuttingRecipeSO.input
+            if (!HasRecipeWithInput(_cuttingRecipeSO)) return;
 
-            // Player has a KitchenObject
-            if (!player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject)) return; // Player not holding a plate
+            // Move KitchenObject to counter, reset cutting progress
+            player.GetKitchenObject().SetKitchenObjectParent(this);
 
-            if (!plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO())) return; // Unable to add ingredient to plate
-            
-            GetKitchenObject().DestroySelf();
+            _state = State.Cutting;
+            _cuttingTimer = 0.0f;
+            _secondsToNextCut = (1.0f / _cuttingRecipeSO.cutsNeeded) * _cuttingRecipeSO.secondsToCut;
+            _cuts = 0;
+
+            UpdateProgress(0.0f);
             return;
         }
+        // Counter holding something
 
-        if (!player.HasKitchenObject()) return; // Player doesn't have KitchenObject
+        if (!player.HasKitchenObject()) // Player not holding something
+        {
+            GetKitchenObject().SetKitchenObjectParent(player);
 
-        _cuttingRecipeSO = GetCuttingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
-        // Player placing object that isn't CuttingRecipeSO.input
-        if (!HasRecipeWithInput(_cuttingRecipeSO)) return;
+            _state = State.Idle;
 
-        // Move KitchenObject to counter, reset cutting progress
-        player.GetKitchenObject().SetKitchenObjectParent(this);
+            UpdateProgress(0.0f);
+            return;
+        }
+        // Player holding something
 
-        _state = State.Cutting;
-        _cuttingTimer = 0.0f;
-        _secondsToNextCut = (1.0f / _cuttingRecipeSO.cutsNeeded) * _cuttingRecipeSO.secondsToCut;
-        _cuts = 0;
-        
-        UpdateProgress(0.0f);
+        if (!player.GetKitchenObject().TryGetPlate(out var plateKitchenObject)) return; // Player not holding a plate
+
+        if (!plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO())) return; // Unable to add ingredient to plate
+
+        GetKitchenObject().DestroySelf();
     }
 
     public override void InteractAlternate(Player player)
