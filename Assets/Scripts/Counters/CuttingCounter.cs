@@ -42,7 +42,15 @@ public class CuttingCounter : BaseCounter, IHasProgress
                 _state = State.Idle;
 
                 UpdateProgress(0.0f);
+                return;
             }
+
+            // Player has a KitchenObject
+            if (!player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject)) return; // Player not holding a plate
+
+            if (!plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO())) return; // Unable to add ingredient to plate
+            
+            GetKitchenObject().DestroySelf();
             return;
         }
 
