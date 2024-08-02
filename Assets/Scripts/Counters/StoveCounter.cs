@@ -45,7 +45,7 @@ public class StoveCounter : BaseCounter, IHasProgress
                 break;
             case State.Frying:
                 _fryingTimer += Time.deltaTime;
-                UpdateProgress(_fryingTimer / _fryingRecipeSO.fryingTimerMax);
+                InvokeOnProgressChanged(_fryingTimer / _fryingRecipeSO.fryingTimerMax);
                 
                 if (_fryingTimer <= _fryingRecipeSO.fryingTimerMax) return; // Not fried
                 
@@ -56,11 +56,11 @@ public class StoveCounter : BaseCounter, IHasProgress
                 _burningTimer = 0.0f;
                 _burningRecipeSO = GetBurningRecipeSO(GetKitchenObject().GetKitchenObjectSO());
                 
-                UpdateState(_state);
+                InvokeOnStateChanged(_state);
                 break;
             case State.Fried:
                 _burningTimer += Time.deltaTime;
-                UpdateProgress(_burningTimer / _burningRecipeSO.burningTimerMax);
+                InvokeOnProgressChanged(_burningTimer / _burningRecipeSO.burningTimerMax);
                 
                 if (_burningTimer <= _burningRecipeSO.burningTimerMax) return; // Not burned
                 
@@ -69,8 +69,8 @@ public class StoveCounter : BaseCounter, IHasProgress
                 
                 _state = State.Burned;
                 
-                UpdateState(_state);
-                UpdateProgress(0.0f);
+                InvokeOnStateChanged(_state);
+                InvokeOnProgressChanged(0.0f);
                 break;
             case State.Burned:
                 break;
@@ -92,8 +92,8 @@ public class StoveCounter : BaseCounter, IHasProgress
             _state = State.Frying;
             _fryingTimer = 0.0f;
 
-            UpdateState(_state);
-            UpdateProgress(0.0f);
+            InvokeOnStateChanged(_state);
+            InvokeOnProgressChanged(0.0f);
             return;
         }
         // Counter holding something
@@ -104,8 +104,8 @@ public class StoveCounter : BaseCounter, IHasProgress
 
             _state = State.Idle;
 
-            UpdateState(_state);
-            UpdateProgress(0.0f);
+            InvokeOnStateChanged(_state);
+            InvokeOnProgressChanged(0.0f);
             return;
         }
         // Player holding something
@@ -118,8 +118,8 @@ public class StoveCounter : BaseCounter, IHasProgress
 
         _state = State.Idle;
 
-        UpdateState(_state);
-        UpdateProgress(0.0f);
+        InvokeOnStateChanged(_state);
+        InvokeOnProgressChanged(0.0f);
     }
 
     public override void InteractAlternate(Player player) { }
@@ -167,7 +167,7 @@ public class StoveCounter : BaseCounter, IHasProgress
         return null;
     }
 
-    private void UpdateState(State state)
+    private void InvokeOnStateChanged(State state)
     {
         OnStateChanged?.Invoke(this, new OnStateChangedEventArgs
         {
@@ -179,7 +179,7 @@ public class StoveCounter : BaseCounter, IHasProgress
      * Sends OnProgressChanged event with cutting progress.
      * @param progress is a range from 0-1, with 0 as no progress and 1 as full progress.
      */
-    private void UpdateProgress(float progress)
+    private void InvokeOnProgressChanged(float progress)
     {
         OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs()
         {

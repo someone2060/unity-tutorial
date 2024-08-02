@@ -31,7 +31,7 @@ public class PlateKitchenObject : KitchenObject
         return true;
     }
 
-    private void UpdateIngredientAdded(KitchenObject kitchenObject)
+    private void InvokeOnIngredientAdded(KitchenObject kitchenObject)
     {
         OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs()
         {
