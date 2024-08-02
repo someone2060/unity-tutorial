@@ -28,6 +28,8 @@ public class PlateKitchenObject : KitchenObject
         if (_kitchenObjectSOList.Contains(kitchenObjectSO)) return false; // Already has type
         
         _kitchenObjectSOList.Add(kitchenObjectSO);
+        
+        InvokeOnIngredientAdded(kitchenObjectSO);
         return true;
     }
 
