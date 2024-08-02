@@ -1,0 +1,27 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+public class PlateKitchenObject : KitchenObject
+{
+    [SerializeField] private List<KitchenObjectSO> validKitchenObjectSOList;
+    
+    private List<KitchenObjectSO> _kitchenObjectSOList;
+
+    private void Awake()
+    {
+        _kitchenObjectSOList = new List<KitchenObjectSO>();
+    }
+    
+    public bool TryAddIngredient(KitchenObjectSO kitchenObjectSO)
+    {
+        if (!validKitchenObjectSOList.Contains(kitchenObjectSO)) return false; // Not valid ingredient
+        
+        if (_kitchenObjectSOList.Contains(kitchenObjectSO)) return false; // Already has type
+        
+        _kitchenObjectSOList.Add(kitchenObjectSO);
+        return true;
+    }
+}

@@ -79,31 +79,45 @@ public class StoveCounter : BaseCounter, IHasProgress
 
     public override void Interact(Player player)
     {
-        if (HasKitchenObject()) // Counter has KitchenObject
+        if (!HasKitchenObject()) // Counter not holding something
         {
-            if (!player.HasKitchenObject()) // Player doesn't have KitchenObject
-            {
-                GetKitchenObject().SetKitchenObjectParent(player);
+            if (!player.HasKitchenObject()) return; // Player not holding something
 
-                _state = State.Idle;
-                
-                UpdateState(_state);
-                UpdateProgress(0.0f);
-            }
+            _fryingRecipeSO = GetFryingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
+            
+            if (!HasRecipeWithInput(_fryingRecipeSO)) return; // Player placing object that isn't CuttingRecipeSO.input
+
+            player.GetKitchenObject().SetKitchenObjectParent(this);
+
+            _state = State.Frying;
+            _fryingTimer = 0.0f;
+
+            UpdateState(_state);
+            UpdateProgress(0.0f);
             return;
         }
+        // Counter holding something
 
-        if (!player.HasKitchenObject()) return; // Player doesn't have KitchenObject
+        if (!player.HasKitchenObject()) // Player not holding something
+        {
+            GetKitchenObject().SetKitchenObjectParent(player);
 
-        _fryingRecipeSO = GetFryingRecipeSO(player.GetKitchenObject().GetKitchenObjectSO());
-        // Player placing object that isn't CuttingRecipeSO.input
-        if (!HasRecipeWithInput(_fryingRecipeSO)) return;
+            _state = State.Idle;
 
-        player.GetKitchenObject().SetKitchenObjectParent(this);
-        
-        _state = State.Frying;
-        _fryingTimer = 0.0f;
-                
+            UpdateState(_state);
+            UpdateProgress(0.0f);
+            return;
+        }
+        // Player holding something
+
+        if (!player.GetKitchenObject().TryGetPlate(out var plateKitchenObject)) return; // Player not holding a plate
+
+        if (!plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO())) return; // Unable to add ingredient to plate
+
+        GetKitchenObject().DestroySelf();
+
+        _state = State.Idle;
+
         UpdateState(_state);
         UpdateProgress(0.0f);
     }
