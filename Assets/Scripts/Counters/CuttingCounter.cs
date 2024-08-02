@@ -49,7 +49,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
             _secondsToNextCut = (1.0f / _cuttingRecipeSO.cutsNeeded) * _cuttingRecipeSO.secondsToCut;
             _cuts = 0;
 
-            UpdateProgress(0.0f);
+            InvokeOnProgressChanged(0.0f);
             return;
         }
         // Counter holding something
@@ -60,7 +60,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
 
             _state = State.Idle;
 
-            UpdateProgress(0.0f);
+            InvokeOnProgressChanged(0.0f);
             return;
         }
         // Player holding something
@@ -89,7 +89,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
                 {
                     _cuts = currentCuts;
             
-                    UpdateProgress((float)_cuts / _cuttingRecipeSO.cutsNeeded);
+                    InvokeOnProgressChanged((float)_cuts / _cuttingRecipeSO.cutsNeeded);
                     OnCut?.Invoke(this, EventArgs.Empty);
                 }
             
@@ -142,7 +142,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
      * Sends OnProgressChanged event with cutting progress.
      * @param progress is a range from 0-1, with 0 as no progress and 1 as full progress.
      */
-    private void UpdateProgress(float progress)
+    private void InvokeOnProgressChanged(float progress)
     {
         OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs()
         {
