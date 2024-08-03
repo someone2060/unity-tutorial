@@ -37,7 +37,7 @@ public class DeliveryManager : MonoBehaviour
 
         _spawnRecipeTimer = SpawnRecipeTimerMax;
 
-        RecipeSO waitingRecipeSO = recipeListSO.recipeSOList[Random.Range(0, recipeListSO.recipeSOList.Count-1)];
+        RecipeSO waitingRecipeSO = recipeListSO.recipeSOList[Random.Range(0, recipeListSO.recipeSOList.Count)];
         _waitingRecipeSOList.Add(waitingRecipeSO);
         
         OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
