@@ -16,12 +16,14 @@ public class SoundManager : MonoBehaviour
 
     private void DeliveryManager_OnRecipeSuccess(object sender, EventArgs e)
     {
-        PlaySound(audioClipReferencesSO.deliverySuccess, Camera.main.transform.position);
+        var deliveryCounter = DeliveryCounter.Instance;
+        PlaySound(audioClipReferencesSO.deliverySuccess, deliveryCounter.transform.position);
     }
 
     private void DeliveryManager_OnRecipeFailed(object sender, EventArgs e)
     {
-        PlaySound(audioClipReferencesSO.deliveryFail, Camera.main.transform.position);
+        var deliveryCounter = DeliveryCounter.Instance;
+        PlaySound(audioClipReferencesSO.deliveryFail, deliveryCounter.transform.position);
     }
 
     private void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volume = 1.0f)
