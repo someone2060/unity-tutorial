@@ -11,7 +11,8 @@ using Vector3 = UnityEngine.Vector3;
 public class Player : MonoBehaviour, IKitchenObjectParent
 {
     public static Player Instance { get; private set; }
-    
+
+    public event EventHandler OnPickedSomething;
     public event EventHandler<OnSelectedCounterChangeEventArgs> OnSelectedCounterChanged;
     public class OnSelectedCounterChangeEventArgs : EventArgs
     {
@@ -193,7 +194,14 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     public KitchenObject GetKitchenObject() => _kitchenObject;
 
-    public void SetKitchenObject(KitchenObject kitchenObject) => _kitchenObject = kitchenObject;
+    public void SetKitchenObject(KitchenObject kitchenObject)
+    {
+        _kitchenObject = kitchenObject;
+
+        if (kitchenObject is null) return;
+        
+        OnPickedSomething?.Invoke(this, EventArgs.Empty);
+    }
 
     public void ClearKitchenObject() => _kitchenObject = null;
 
