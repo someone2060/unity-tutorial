@@ -8,15 +8,18 @@ using UnityEngine.Serialization;
 
 public class CuttingCounter : BaseCounter, IHasProgress
 {
+    public static event EventHandler OnAnyCut;
+    
+    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
+    public event EventHandler OnCut;
+
     private enum State
     {
         Idle,
         Cutting,
         Cut
     }
-    
-    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
-    public event EventHandler OnCut;
+
     
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
@@ -91,6 +94,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
             
                     InvokeOnProgressChanged((float)_cuts / _cuttingRecipeSO.cutsNeeded);
                     OnCut?.Invoke(this, EventArgs.Empty);
+                    OnAnyCut?.Invoke(this, EventArgs.Empty);
                 }
             
                 // Cutting not finished
