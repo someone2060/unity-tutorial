@@ -8,6 +8,10 @@ using UnityEngine.Serialization;
 
 public class CuttingCounter : BaseCounter, IHasProgress
 {
+    public static event EventHandler OnAnyCut;
+    
+    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
+    public event EventHandler OnCut;
 
     private enum State
     {
@@ -16,10 +20,6 @@ public class CuttingCounter : BaseCounter, IHasProgress
         Cut
     }
 
-    public static event EventHandler OnAnyCut;
-    
-    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged;
-    public event EventHandler OnCut;
     
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
