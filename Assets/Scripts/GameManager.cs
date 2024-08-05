@@ -64,18 +64,11 @@ public class GameManager : MonoBehaviour
         Debug.Log(_state);
     }
 
-    public bool IsGamePlaying()
-    {
-        return _state == State.GamePlaying;
-    }
+    public bool IsGamePlaying() => _state == State.GamePlaying;
 
-    public bool IsCountdownToStartActive()
-    {
-        return _state == State.CountdownToStart;
-    }
+    public bool IsCountdownToStartActive() => _state == State.CountdownToStart;
 
-    public float GetCountdownToStartTimer()
-    {
-        return _countdownToStartTimer;
-    }
+    public bool IsGameOver() => _state == State.GameOver;
+
+    public float GetCountdownToStartTimer() => _countdownToStartTimer;
 }
