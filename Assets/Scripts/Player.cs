@@ -49,10 +49,9 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractPerformed(object sender, EventArgs e)
     {
-        if (_selectedCounter is not null)
-        {
-            _selectedCounter.Interact(this);
-        }
+        if (!GameManager.Instance.IsGamePlaying()) return;
+
+        _selectedCounter?.Interact(this);
     }
 
     private void Update()
@@ -172,6 +171,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
      */
     private void UpdateInteractAlternate()
     {
+        if (!GameManager.Instance.IsGamePlaying()) return;
+        
         if (!gameInput.GetInteractAlternateHeld()) return;
         if (_selectedCounter is null) return;
         
