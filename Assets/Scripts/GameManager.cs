@@ -20,13 +20,15 @@ public class GameManager : MonoBehaviour
     private State _state;
     private float _waitingToStartTimer = 1.0f;
     private float _countdownToStartTimer = 3.0f;
-    private float _gamePlayingTimer = 10.0f;
+    private float _gamePlayingTimer;
+    private const float GamePlayingTimerMax = 10.0f;
 
     private void Awake()
     {
         Instance = this;
         
         _state = State.WaitingToStart;
+        _gamePlayingTimer = GamePlayingTimerMax;
     }
 
     private void Update()
@@ -64,18 +66,13 @@ public class GameManager : MonoBehaviour
         Debug.Log(_state);
     }
 
-    public bool IsGamePlaying()
-    {
-        return _state == State.GamePlaying;
-    }
+    public bool IsGamePlaying() => _state == State.GamePlaying;
 
-    public bool IsCountdownToStartActive()
-    {
-        return _state == State.CountdownToStart;
-    }
+    public bool IsCountdownToStartActive() => _state == State.CountdownToStart;
 
-    public float GetCountdownToStartTimer()
-    {
-        return _countdownToStartTimer;
-    }
+    public bool IsGameOver() => _state == State.GameOver;
+
+    public float GetCountdownToStartTimer() => _countdownToStartTimer;
+
+    public float GetGamePlayingTimerNormalized() => 1 - (_gamePlayingTimer / GamePlayingTimerMax);
 }
