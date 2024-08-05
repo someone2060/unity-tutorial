@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+    
     private enum State
     {
         WaitingToStart,
@@ -20,6 +22,8 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
+        
         _state = State.WaitingToStart;
     }
 
@@ -51,5 +55,12 @@ public class GameManager : MonoBehaviour
             case State.GameOver:
                 break;
         }
+        
+        Debug.Log(_state);
+    }
+
+    public bool IsGamePlaying()
+    {
+        return _state == State.GamePlaying;
     }
 }
