@@ -20,7 +20,6 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     }
 
     [SerializeField] private float moveSpeed = 1.0f;
-    [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
     [SerializeField] private Transform kitchenObjectHoldPoint;
 
@@ -44,7 +43,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void Start()
     {
-        gameInput.OnInteractPerformed += GameInput_OnInteractPerformed;
+        GameInput.Instance.OnInteractPerformed += GameInput_OnInteractPerformed;
     }
 
     private void GameInput_OnInteractPerformed(object sender, EventArgs e)
@@ -66,7 +65,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
      */
     private void UpdateMovement()
     {
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+        Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
         Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
 
@@ -133,7 +132,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
      */
     private void UpdateInteractions()
     {
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+        Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
         Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
 
@@ -173,10 +172,9 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     {
         if (!GameManager.Instance.IsGamePlaying()) return;
         
-        if (!gameInput.GetInteractAlternateHeld()) return;
-        if (_selectedCounter is null) return;
-        
-        _selectedCounter.InteractAlternate(this);
+        if (!GameInput.Instance.GetInteractAlternateHeld()) return;
+
+        _selectedCounter?.InteractAlternate(this);
     }
 
     private void SetSelectedCounter(BaseCounter baseCounter)

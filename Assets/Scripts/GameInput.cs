@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
+    public static GameInput Instance { get; private set; }
+    
     public event EventHandler OnInteractPerformed;
     public event EventHandler OnPausePerformed;
     private PlayerInputActions _playerInputActions;
@@ -24,6 +26,8 @@ public class GameInput : MonoBehaviour
         _playerInputActions.Player.Pause.performed += Pause_performed;
 
         _interactAlternateHeld = false;
+
+        Instance = this;
     }
     
     public bool GetInteractAlternateHeld() => _interactAlternateHeld;

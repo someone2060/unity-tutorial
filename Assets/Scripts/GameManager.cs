@@ -31,6 +31,16 @@ public class GameManager : MonoBehaviour
         _gamePlayingTimer = GamePlayingTimerMax;
     }
 
+    private void Start()
+    {
+        GameInput.Instance.OnPausePerformed += GameInput_OnPausePerformed;
+    }
+
+    private void GameInput_OnPausePerformed(object sender, EventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
     private void Update()
     {
         switch (_state)
