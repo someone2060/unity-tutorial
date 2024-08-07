@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public event EventHandler OnStateChanged;
+    public event EventHandler OnGamePaused;
+    public event EventHandler OnGameUnpaused;
     
     private enum State
     {
@@ -91,9 +93,11 @@ public class GameManager : MonoBehaviour
         if (_isGamePaused)
         {
             Time.timeScale = 0.0f;
+            OnGamePaused?.Invoke(this, EventArgs.Empty);
             return;
         }
 
         Time.timeScale = 1.0f;
+        OnGameUnpaused?.Invoke(this, EventArgs.Empty);
     }
 }
