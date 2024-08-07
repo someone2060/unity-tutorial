@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     private float _countdownToStartTimer = 3.0f;
     private float _gamePlayingTimer;
     private const float GamePlayingTimerMax = 10.0f;
+    private bool _isGamePaused = false;
 
     private void Awake()
     {
@@ -38,7 +39,7 @@ public class GameManager : MonoBehaviour
 
     private void GameInput_OnPausePerformed(object sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        TogglePauseGame();
     }
 
     private void Update()
@@ -83,4 +84,16 @@ public class GameManager : MonoBehaviour
     public float GetCountdownToStartTimer() => _countdownToStartTimer;
 
     public float GetGamePlayingTimerNormalized() => 1 - (_gamePlayingTimer / GamePlayingTimerMax);
+    
+    private void TogglePauseGame()
+    {
+        _isGamePaused = !_isGamePaused;
+        if (_isGamePaused)
+        {
+            Time.timeScale = 0.0f;
+            return;
+        }
+
+        Time.timeScale = 1.0f;
+    }
 }
