@@ -7,7 +7,10 @@ using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
+    public static GameInput Instance { get; private set; }
+    
     public event EventHandler OnInteractPerformed;
+    public event EventHandler OnPausePerformed;
     private PlayerInputActions _playerInputActions;
 
     private bool _interactAlternateHeld;
@@ -20,26 +23,34 @@ public class GameInput : MonoBehaviour
         _playerInputActions.Player.Interact.performed += Interact_performed;
         _playerInputActions.Player.InteractAlternate.performed += InteractAlternate_performed;
         _playerInputActions.Player.InteractAlternate.canceled += InteractAlternate_canceled;
+        _playerInputActions.Player.Pause.performed += Pause_performed;
 
         _interactAlternateHeld = false;
+
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        _playerInputActions.Player.Interact.performed -= Interact_performed;
+        _playerInputActions.Player.InteractAlternate.performed -= InteractAlternate_performed;
+        _playerInputActions.Player.InteractAlternate.canceled -= InteractAlternate_canceled;
+        _playerInputActions.Player.Pause.performed -= Pause_performed;
+        
+        _playerInputActions.Dispose();
     }
 
     public bool GetInteractAlternateHeld() => _interactAlternateHeld;
 
-    private void InteractAlternate_canceled(InputAction.CallbackContext obj)
-    {
-        _interactAlternateHeld = false;
-    }
+    private void InteractAlternate_canceled(InputAction.CallbackContext obj) => _interactAlternateHeld = false;
 
-    private void InteractAlternate_performed(InputAction.CallbackContext obj)
-    {
-        _interactAlternateHeld = true;
-    }
+    private void InteractAlternate_performed(InputAction.CallbackContext obj) => _interactAlternateHeld = true;
 
-    private void Interact_performed(InputAction.CallbackContext obj)
-    {
+    private void Interact_performed(InputAction.CallbackContext obj) => 
         OnInteractPerformed?.Invoke(this, EventArgs.Empty);
-    }
+
+    private void Pause_performed(InputAction.CallbackContext obj) => 
+        OnPausePerformed?.Invoke(this, EventArgs.Empty);
 
     public Vector2 GetMovementVectorNormalized()
     {

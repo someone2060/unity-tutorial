@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public event EventHandler OnStateChanged;
+    public event EventHandler OnGamePaused;
+    public event EventHandler OnGameUnpaused;
     
     private enum State
     {
@@ -22,6 +24,7 @@ public class GameManager : MonoBehaviour
     private float _countdownToStartTimer = 3.0f;
     private float _gamePlayingTimer;
     private const float GamePlayingTimerMax = 10.0f;
+    private bool _isGamePaused = false;
 
     private void Awake()
     {
@@ -29,6 +32,16 @@ public class GameManager : MonoBehaviour
         
         _state = State.WaitingToStart;
         _gamePlayingTimer = GamePlayingTimerMax;
+    }
+
+    private void Start()
+    {
+        GameInput.Instance.OnPausePerformed += GameInput_OnPausePerformed;
+    }
+
+    private void GameInput_OnPausePerformed(object sender, EventArgs e)
+    {
+        TogglePauseGame();
     }
 
     private void Update()
@@ -66,6 +79,8 @@ public class GameManager : MonoBehaviour
 
     public bool IsGamePlaying() => _state == State.GamePlaying;
 
+    public bool IsGamePaused() => _isGamePaused;
+
     public bool IsCountdownToStartActive() => _state == State.CountdownToStart;
 
     public bool IsGameOver() => _state == State.GameOver;
@@ -73,4 +88,18 @@ public class GameManager : MonoBehaviour
     public float GetCountdownToStartTimer() => _countdownToStartTimer;
 
     public float GetGamePlayingTimerNormalized() => 1 - (_gamePlayingTimer / GamePlayingTimerMax);
+    
+    public void TogglePauseGame()
+    {
+        _isGamePaused = !_isGamePaused;
+        if (_isGamePaused)
+        {
+            Time.timeScale = 0.0f;
+            OnGamePaused?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        Time.timeScale = 1.0f;
+        OnGameUnpaused?.Invoke(this, EventArgs.Empty);
+    }
 }
