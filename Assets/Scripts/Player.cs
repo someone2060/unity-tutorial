@@ -45,6 +45,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     private void GameInput_OnInteractPerformed(object sender, EventArgs e)
     {
         if (!GameManager.Instance.IsGamePlaying()) return;
+        if (GameManager.Instance.IsGamePaused()) return;
 
         _selectedCounter?.Interact(this);
     }
@@ -167,7 +168,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     private void UpdateInteractAlternate()
     {
         if (!GameManager.Instance.IsGamePlaying()) return;
-        
+        if (GameManager.Instance.IsGamePaused()) return;
+
         if (!GameInput.Instance.GetInteractAlternateHeld()) return;
 
         _selectedCounter?.InteractAlternate(this);

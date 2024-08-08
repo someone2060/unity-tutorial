@@ -79,6 +79,8 @@ public class GameManager : MonoBehaviour
 
     public bool IsGamePlaying() => _state == State.GamePlaying;
 
+    public bool IsGamePaused() => _isGamePaused;
+
     public bool IsCountdownToStartActive() => _state == State.CountdownToStart;
 
     public bool IsGameOver() => _state == State.GameOver;
