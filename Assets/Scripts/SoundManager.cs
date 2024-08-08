@@ -10,8 +10,12 @@ public class SoundManager : MonoBehaviour
     
     [SerializeField] private AudioClipReferencesSO audioClipReferencesSO;
 
+    private float _volume;
+    
     private void Awake()
     {
+        _volume = 1.0f;
+        
         Instance = this;
     }
 
@@ -37,10 +41,8 @@ public class SoundManager : MonoBehaviour
         PlaySound(audioClipReferencesSO.objectDrop, baseCounter.transform.position);
     }
 
-    private void Player_OnPickedSomething(object sender, EventArgs e)
-    {
+    private void Player_OnPickedSomething(object sender, EventArgs e) => 
         PlaySound(audioClipReferencesSO.objectPickup, Player.Instance.transform.position);
-    }
 
     private void CuttingCounter_OnAnyCut(object sender, EventArgs e)
     {
@@ -48,28 +50,26 @@ public class SoundManager : MonoBehaviour
         PlaySound(audioClipReferencesSO.chop, cuttingCounter.transform.position);
     }
 
-    private void DeliveryManager_OnRecipeSuccess(object sender, EventArgs e)
-    {
+    private void DeliveryManager_OnRecipeSuccess(object sender, EventArgs e) => 
         PlaySound(audioClipReferencesSO.deliverySuccess, DeliveryCounter.Instance.transform.position);
-    }
 
-    private void DeliveryManager_OnRecipeFailed(object sender, EventArgs e)
-    {
+    private void DeliveryManager_OnRecipeFailed(object sender, EventArgs e) => 
         PlaySound(audioClipReferencesSO.deliveryFail, DeliveryCounter.Instance.transform.position);
-    }
 
-    public void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volume = 1.0f)
-    {
-        PlaySound(audioClipArray[Random.Range(0, audioClipArray.Length)], position, volume);
-    }
+    public void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volumeMultiplier = 1.0f) => 
+        PlaySound(audioClipArray[Random.Range(0, audioClipArray.Length)], position, volumeMultiplier);
 
-    public void PlaySound(AudioClip audioClip, Vector3 position, float volume = 1.0f)
-    {
-        AudioSource.PlayClipAtPoint(audioClip, position, volume);
-    }
+    public void PlaySound(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1.0f) => 
+        AudioSource.PlayClipAtPoint(audioClip, position, _volume * volumeMultiplier);
 
-    public void PlayFootstepSound(Vector3 position, float volume = 1.0f)
-    {
+    public void PlayFootstepSound(Vector3 position, float volume = 1.0f) => 
         PlaySound(audioClipReferencesSO.footstep, position, volume);
+
+    public void ChangeVolume()
+    {
+        _volume += .1f;
+        if (_volume > 1.0f) _volume = 0.0f;
     }
+
+    public float GetVolume() => _volume;
 }
