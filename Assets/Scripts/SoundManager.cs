@@ -68,7 +68,7 @@ public class SoundManager : MonoBehaviour
     public void ChangeVolume()
     {
         _volume += .1f;
-        if (_volume > 1.0f) _volume = 0.0f;
+        if (_volume > 1.05f) _volume = 0.0f;
     }
 
     public float GetVolume() => _volume;
