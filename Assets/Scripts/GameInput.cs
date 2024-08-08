@@ -29,7 +29,17 @@ public class GameInput : MonoBehaviour
 
         Instance = this;
     }
-    
+
+    private void OnDestroy()
+    {
+        _playerInputActions.Player.Interact.performed -= Interact_performed;
+        _playerInputActions.Player.InteractAlternate.performed -= InteractAlternate_performed;
+        _playerInputActions.Player.InteractAlternate.canceled -= InteractAlternate_canceled;
+        _playerInputActions.Player.Pause.performed -= Pause_performed;
+        
+        _playerInputActions.Dispose();
+    }
+
     public bool GetInteractAlternateHeld() => _interactAlternateHeld;
 
     private void InteractAlternate_canceled(InputAction.CallbackContext obj) => _interactAlternateHeld = false;
