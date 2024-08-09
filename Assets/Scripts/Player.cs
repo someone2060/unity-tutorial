@@ -129,6 +129,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
      */
     private void UpdateInteractions()
     {
+        if (GameManager.Instance.IsGamePaused()) return;
+        
         Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
         Vector3 moveDirection = new Vector3(inputVector.x, 0.0f, inputVector.y);
