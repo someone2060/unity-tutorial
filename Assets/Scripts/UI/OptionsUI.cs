@@ -9,9 +9,9 @@ public class OptionsUI : MonoBehaviour
 {
     public static OptionsUI Instance { get; private set; }
     
-    [SerializeField] private Button musicButton;
-    [SerializeField] private Button soundEffectsButton;
     [SerializeField] private Button backButton;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider soundEffectsSlider;
     [SerializeField] private TextMeshProUGUI musicText;
     [SerializeField] private TextMeshProUGUI soundEffectsText;
 
@@ -19,14 +19,14 @@ public class OptionsUI : MonoBehaviour
     {
         Instance = this;
         
-        musicButton.onClick.AddListener((() =>
+        musicSlider.onValueChanged.AddListener((value =>
         {
-            MusicManager.Instance.ChangeVolume();
+            MusicManager.Instance.SetVolume(value);
             UpdateVisual();
         }));
-        soundEffectsButton.onClick.AddListener((() =>
+        soundEffectsSlider.onValueChanged.AddListener((value =>
         {
-            SoundManager.Instance.ChangeVolume();
+            SoundManager.Instance.SetVolume(value);
             UpdateVisual();
         }));
         backButton.onClick.AddListener((() =>
@@ -51,8 +51,10 @@ public class OptionsUI : MonoBehaviour
 
     private void UpdateVisual()
     {
-        musicText.text = "Music: " + Mathf.Round(MusicManager.Instance.GetVolume() * 10.0f);
-        soundEffectsText.text = "Sound Effects: " + Mathf.Round(SoundManager.Instance.GetVolume() * 10.0f);
+        musicSlider.value = MusicManager.Instance.GetVolume();
+        soundEffectsSlider.value = SoundManager.Instance.GetVolume();
+        musicText.text = $"Music: {Mathf.Round(MusicManager.Instance.GetVolume() * 100.0f)}%";
+        soundEffectsText.text = $"Sound Effects: {Mathf.Round(SoundManager.Instance.GetVolume() * 100.0f)}%";
     }
 
     public void Show()

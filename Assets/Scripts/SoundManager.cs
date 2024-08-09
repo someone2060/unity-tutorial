@@ -66,15 +66,16 @@ public class SoundManager : MonoBehaviour
 
     public void PlayFootstepSound(Vector3 position, float volume = 1.0f) => 
         PlaySound(audioClipReferencesSO.footstep, position, volume);
+    
+    public float GetVolume() => _volume;
 
-    public void ChangeVolume()
+    public void SetVolume(float volume)
     {
-        _volume += .1f;
-        if (_volume > 1.05f) _volume = 0.0f;
+        if (volume > 1) volume = 1.0f;
+        if (volume < 0) volume = 0.0f;
+        _volume = volume;
         
         PlayerPrefs.SetFloat(PlayerPrefsSoundEffectsVolume, _volume);
         PlayerPrefs.Save();
     }
-    
-    public float GetVolume() => _volume;
 }

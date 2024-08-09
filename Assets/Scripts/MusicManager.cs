@@ -21,22 +21,16 @@ public class MusicManager : MonoBehaviour
         SetVolume(PlayerPrefs.GetFloat(PlayerPrefsMusicVolume, .3f));
     }
 
-    public void ChangeVolume()
-    {
-        _volume += .1f;
-        if (_volume > 1.05f) _volume = 0.0f;
+    public float GetVolume() => _volume;
 
-        SetVolume(_volume);
+    public void SetVolume(float volume)
+    {
+        if (volume > 1) volume = 1.0f;
+        if (volume < 0) volume = 0.0f;
+        _volume = volume;
+        _audioSource.volume = _volume;
         
         PlayerPrefs.SetFloat(PlayerPrefsMusicVolume, _volume);
         PlayerPrefs.Save();
-    }
-
-    public float GetVolume() => _volume;
-
-    private void SetVolume(float volume)
-    {
-        _volume = volume;
-        _audioSource.volume = _volume;
     }
 }
