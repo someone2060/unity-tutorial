@@ -33,20 +33,27 @@ public class OptionsUI : MonoBehaviour
     {
         Instance = this;
         
-        musicSlider.onValueChanged.AddListener((value =>
-        {
-            MusicManager.Instance.SetVolume(value);
-            UpdateVisual();
-        }));
-        soundEffectsSlider.onValueChanged.AddListener((value =>
-        {
-            SoundManager.Instance.SetVolume(value);
-            UpdateVisual();
-        }));
         backButton.onClick.AddListener((() =>
         {
             GamePauseUI.Instance.Show();
             Hide();
+        }));
+        
+        musicSlider.onValueChanged.AddListener(value =>
+        {
+            MusicManager.Instance.SetVolume(value);
+            UpdateVisual();
+        });
+        soundEffectsSlider.onValueChanged.AddListener(value =>
+        {
+            SoundManager.Instance.SetVolume(value);
+            UpdateVisual();
+        });
+        
+        moveUpButton.onClick.AddListener((() =>
+        {
+            GameInput.Instance.RebindBinding(GameInput.Binding.MoveUp);
+            UpdateVisual();
         }));
     }
 
