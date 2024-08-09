@@ -104,42 +104,8 @@ public class GameInput : MonoBehaviour
     {
         _playerInputActions.Player.Disable();
 
-        InputAction inputAction;
-        int bindingIndex;
-        
-        switch (binding)
-        {
-            default:
-            case GameInput.Binding.MoveUp:
-                inputAction = _playerInputActions.Player.Move;
-                bindingIndex = 1;
-                break;
-            case GameInput.Binding.MoveDown:
-                inputAction = _playerInputActions.Player.Move;
-                bindingIndex = 2;
-                break;
-            case GameInput.Binding.MoveLeft:
-                inputAction = _playerInputActions.Player.Move;
-                bindingIndex = 3;
-                break;
-            case GameInput.Binding.MoveRight:
-                inputAction = _playerInputActions.Player.Move;
-                bindingIndex = 4;
-                break;
-            case GameInput.Binding.Interact:
-                inputAction = _playerInputActions.Player.Interact;
-                bindingIndex = 0;
-                break;
-            case GameInput.Binding.InteractAlternate:
-                inputAction = _playerInputActions.Player.InteractAlternate;
-                bindingIndex = 0;
-                break;
-            case GameInput.Binding.Pause:
-                inputAction = _playerInputActions.Player.Pause;
-                bindingIndex = 0;
-                break;
-        }
-        
+        GetBinding(binding, out var inputAction, out var bindingIndex);
+
         inputAction.PerformInteractiveRebinding(bindingIndex)
             .OnComplete(callback =>
             {
@@ -151,5 +117,50 @@ public class GameInput : MonoBehaviour
                 PlayerPrefs.Save();
             })
             .Start();
+    }
+
+    public void ResetBinding(Binding binding, Action onActionRebound)
+    {
+        _playerInputActions.Player.Disable();
+        
+        GetBinding(binding, out var inputAction, out var bindingIndex);
+        
+        inputAction.RemoveBindingOverride(bindingIndex);
+    }
+
+    private void GetBinding(Binding binding, out InputAction inputAction, out int bindingIndex)
+    {
+        switch (binding)
+        {
+            default:
+            case Binding.MoveUp:
+                inputAction = _playerInputActions.Player.Move;
+                bindingIndex = 1;
+                break;
+            case Binding.MoveDown:
+                inputAction = _playerInputActions.Player.Move;
+                bindingIndex = 2;
+                break;
+            case Binding.MoveLeft:
+                inputAction = _playerInputActions.Player.Move;
+                bindingIndex = 3;
+                break;
+            case Binding.MoveRight:
+                inputAction = _playerInputActions.Player.Move;
+                bindingIndex = 4;
+                break;
+            case Binding.Interact:
+                inputAction = _playerInputActions.Player.Interact;
+                bindingIndex = 0;
+                break;
+            case Binding.InteractAlternate:
+                inputAction = _playerInputActions.Player.InteractAlternate;
+                bindingIndex = 0;
+                break;
+            case Binding.Pause:
+                inputAction = _playerInputActions.Player.Pause;
+                bindingIndex = 0;
+                break;
+        }
     }
 }
