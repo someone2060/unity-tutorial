@@ -139,8 +139,7 @@ public class GameInput : MonoBehaviour
                 bindingIndex = 0;
                 break;
         }
-
-
+        
         inputAction.PerformInteractiveRebinding(bindingIndex)
             .OnComplete(callback =>
             {

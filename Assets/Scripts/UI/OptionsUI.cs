@@ -77,7 +77,7 @@ public class OptionsUI : MonoBehaviour
 
     private void UpdateVisual()
     {
-        // Music, sound effets
+        // Music, sound effects
         musicSlider.value = MusicManager.Instance.GetVolume();
         soundEffectsSlider.value = SoundManager.Instance.GetVolume();
         musicText.text = $"Music: {Mathf.Round(MusicManager.Instance.GetVolume() * 100.0f)}%";
