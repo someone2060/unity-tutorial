@@ -65,10 +65,19 @@ public class OptionsUI : MonoBehaviour
 
     private void UpdateVisual()
     {
+        // Music, sound effets
         musicSlider.value = MusicManager.Instance.GetVolume();
         soundEffectsSlider.value = SoundManager.Instance.GetVolume();
         musicText.text = $"Music: {Mathf.Round(MusicManager.Instance.GetVolume() * 100.0f)}%";
         soundEffectsText.text = $"Sound Effects: {Mathf.Round(SoundManager.Instance.GetVolume() * 100.0f)}%";
+        // Keybinds
+        moveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveUp);
+        moveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveDown);
+        moveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveLeft);
+        moveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveRight);
+        interactText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
+        interactAlternateText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlternate);
+        pauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
     }
 
     public void Show()
