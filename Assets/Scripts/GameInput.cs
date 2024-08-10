@@ -15,6 +15,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnPausePerformed;
     private PlayerInputActions _playerInputActions;
 
+    [Serializable]
     public enum Binding
     {
         MoveUp,
@@ -80,24 +81,8 @@ public class GameInput : MonoBehaviour
 
     public string GetBindingText(Binding binding)
     {
-        switch (binding)
-        {
-            default:
-            case Binding.MoveUp:
-                return _playerInputActions.Player.Move.bindings[1].ToDisplayString();
-            case Binding.MoveDown:
-                return _playerInputActions.Player.Move.bindings[2].ToDisplayString();
-            case Binding.MoveLeft:
-                return _playerInputActions.Player.Move.bindings[3].ToDisplayString();
-            case Binding.MoveRight:
-                return _playerInputActions.Player.Move.bindings[4].ToDisplayString();
-            case Binding.Interact:
-                return _playerInputActions.Player.Interact.bindings[0].ToDisplayString();
-            case Binding.InteractAlternate:
-                return _playerInputActions.Player.InteractAlternate.bindings[0].ToDisplayString();
-            case Binding.Pause:
-                return _playerInputActions.Player.Pause.bindings[0].ToDisplayString();
-        }
+        GetBinding(binding, out var inputAction, out var bindingIndex);
+        return inputAction.bindings[bindingIndex].ToDisplayString();
     }
 
     public void RebindBinding(Binding binding, Action onActionRebound)
@@ -126,6 +111,8 @@ public class GameInput : MonoBehaviour
         GetBinding(binding, out var inputAction, out var bindingIndex);
         
         inputAction.RemoveBindingOverride(bindingIndex);
+
+        onActionRebound();
     }
 
     private void GetBinding(Binding binding, out InputAction inputAction, out int bindingIndex)
