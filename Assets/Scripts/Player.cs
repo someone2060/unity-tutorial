@@ -78,7 +78,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
             {
                 // Test X movement
                 Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-                canMove = (moveDirection.x != 0) && !MovementCollides(moveDirectionX, moveDistance);
+                canMove = moveDirection.x is < -.5f or > .5f && !MovementCollides(moveDirectionX, moveDistance);
                 if (canMove)
                 {
                     moveDirection = moveDirectionX;
@@ -87,7 +87,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
                 // Test Z movement
                 Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                canMove = (moveDirection.z != 0) && !MovementCollides(moveDirectionZ, moveDistance);
+                canMove = moveDirection.z is < -.5f or > .5f && !MovementCollides(moveDirectionZ, moveDistance);
                 if (canMove)
                 {
                     moveDirection = moveDirectionZ;
