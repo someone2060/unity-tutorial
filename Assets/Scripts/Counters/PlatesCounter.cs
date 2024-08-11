@@ -23,6 +23,7 @@ public class PlatesCounter : BaseCounter
 
     private void Update()
     {
+        if (!GameManager.Instance.IsGamePlaying()) return; // Not in GamePlaying phase
         if (_platesSpawned >= PlatesSpawnedMax) return; // Max plates spawned
         
         _spawnPlateTimer += Time.deltaTime;

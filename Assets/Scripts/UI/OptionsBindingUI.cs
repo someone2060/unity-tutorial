@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OptionsRebindingUI : MonoBehaviour
+public class OptionsBindingUI : MonoBehaviour
 {
     [SerializeField] private Button bindingButton;
     [SerializeField] private TextMeshProUGUI bindingText;

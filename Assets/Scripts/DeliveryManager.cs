@@ -34,6 +34,7 @@ public class DeliveryManager : MonoBehaviour
 
     private void Update()
     {
+        if (!GameManager.Instance.IsGamePlaying()) return; // Not in GamePlaying state
         if (_waitingRecipeSOList.Count >= WaitingRecipesMax) return; // Reached waiting max
         
         _spawnRecipeTimer -= Time.deltaTime;
@@ -47,7 +48,7 @@ public class DeliveryManager : MonoBehaviour
         OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
     }
 
-    public bool TryDeliverRecipe(PlateKitchenObject plateKitchenObject)
+    public void DeliverRecipe(PlateKitchenObject plateKitchenObject)
     {
         var plateAmountIngredients = plateKitchenObject.GetKitchenObjectSOList().Count;
 
@@ -67,11 +68,10 @@ public class DeliveryManager : MonoBehaviour
 
             OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
             OnRecipeSuccess?.Invoke(this, EventArgs.Empty);
-            return true;
+            return;
         }
         
         OnRecipeFailed?.Invoke(this, EventArgs.Empty);
-        return false;
     }
 
     public List<RecipeSO> GetWaitingRecipeSOList() => _waitingRecipeSOList;
