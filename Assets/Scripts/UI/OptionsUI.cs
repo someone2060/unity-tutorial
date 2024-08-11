@@ -16,14 +16,6 @@ public class OptionsUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI musicText;
     [SerializeField] private TextMeshProUGUI soundEffectsText;
 
-    [SerializeField] private OptionsRebindingUI moveUpOptionsRebindingUI;
-    [SerializeField] private OptionsRebindingUI moveDownOptionsRebindingUI;
-    [SerializeField] private OptionsRebindingUI moveLeftOptionsRebindingUI;
-    [SerializeField] private OptionsRebindingUI moveRightOptionsRebindingUI;
-    [SerializeField] private OptionsRebindingUI interactOptionsRebindingUI;
-    [SerializeField] private OptionsRebindingUI interactAlternateOptionsRebindingUI;
-    [SerializeField] private OptionsRebindingUI pauseOptionsRebindingUI;
-
     private void Awake()
     {
         Instance = this;

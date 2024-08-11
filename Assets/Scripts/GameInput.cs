@@ -109,13 +109,14 @@ public class GameInput : MonoBehaviour
 
     public void ResetBinding(Binding binding, Action onActionRebound)
     {
-        _playerInputActions.Player.Disable();
-        
         GetBinding(binding, out var inputAction, out var bindingIndex);
         
         inputAction.RemoveBindingOverride(bindingIndex);
 
         onActionRebound();
+                
+        PlayerPrefs.SetString(PlayerPrefsBindings, _playerInputActions.SaveBindingOverridesAsJson());
+        PlayerPrefs.Save();
     }
 
     private void GetBinding(Binding binding, out InputAction inputAction, out int bindingIndex)
