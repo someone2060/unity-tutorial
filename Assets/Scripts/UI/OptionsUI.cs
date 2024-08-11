@@ -16,13 +16,15 @@ public class OptionsUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI musicText;
     [SerializeField] private TextMeshProUGUI soundEffectsText;
 
+    private Action _onCloseButtonAction;
+    
     private void Awake()
     {
         Instance = this;
         
         backButton.onClick.AddListener((() =>
         {
-            GamePauseUI.Instance.Show();
+            _onCloseButtonAction();
             Hide();
         }));
         
@@ -60,9 +62,12 @@ public class OptionsUI : MonoBehaviour
         soundEffectsText.text = $"Sound Effects: {Mathf.Round(SoundManager.Instance.GetVolume() * 100.0f)}%";
     }
 
-    public void Show()
+    public void Show(Action onCloseButtonAction)
     {
+        _onCloseButtonAction = onCloseButtonAction;
         gameObject.SetActive(true);
+        
+        musicSlider.Select();
     }
 
     private void Hide()
