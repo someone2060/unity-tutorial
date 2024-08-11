@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class OptionsUI : MonoBehaviour
@@ -15,25 +16,34 @@ public class OptionsUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI musicText;
     [SerializeField] private TextMeshProUGUI soundEffectsText;
 
+    [SerializeField] private OptionsRebindingUI moveUpOptionsRebindingUI;
+    [SerializeField] private OptionsRebindingUI moveDownOptionsRebindingUI;
+    [SerializeField] private OptionsRebindingUI moveLeftOptionsRebindingUI;
+    [SerializeField] private OptionsRebindingUI moveRightOptionsRebindingUI;
+    [SerializeField] private OptionsRebindingUI interactOptionsRebindingUI;
+    [SerializeField] private OptionsRebindingUI interactAlternateOptionsRebindingUI;
+    [SerializeField] private OptionsRebindingUI pauseOptionsRebindingUI;
+
     private void Awake()
     {
         Instance = this;
         
-        musicSlider.onValueChanged.AddListener((value =>
-        {
-            MusicManager.Instance.SetVolume(value);
-            UpdateVisual();
-        }));
-        soundEffectsSlider.onValueChanged.AddListener((value =>
-        {
-            SoundManager.Instance.SetVolume(value);
-            UpdateVisual();
-        }));
         backButton.onClick.AddListener((() =>
         {
             GamePauseUI.Instance.Show();
             Hide();
         }));
+        
+        musicSlider.onValueChanged.AddListener(value =>
+        {
+            MusicManager.Instance.SetVolume(value);
+            UpdateVisual();
+        });
+        soundEffectsSlider.onValueChanged.AddListener(value =>
+        {
+            SoundManager.Instance.SetVolume(value);
+            UpdateVisual();
+        });
     }
 
     private void Start()
@@ -51,6 +61,7 @@ public class OptionsUI : MonoBehaviour
 
     private void UpdateVisual()
     {
+        // Music, sound effects
         musicSlider.value = MusicManager.Instance.GetVolume();
         soundEffectsSlider.value = SoundManager.Instance.GetVolume();
         musicText.text = $"Music: {Mathf.Round(MusicManager.Instance.GetVolume() * 100.0f)}%";
@@ -62,7 +73,7 @@ public class OptionsUI : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public void Hide()
+    private void Hide()
     {
         gameObject.SetActive(false);
     }
