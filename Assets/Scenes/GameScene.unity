@@ -3527,7 +3527,6 @@ MonoBehaviour:
   interactOptionsRebindingUI: {fileID: 396242770}
   interactAlternateOptionsRebindingUI: {fileID: 325234104}
   pauseOptionsRebindingUI: {fileID: 50943708}
-  pressToRebindKeyTransform: {fileID: 0}
 --- !u!4 &490226825 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4757338018656853236, guid: 1b00f3ed9161a0c40be8f42316b906dc,
