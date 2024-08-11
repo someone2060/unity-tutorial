@@ -6,8 +6,6 @@ using UnityEngine;
 public class StoveBurnWarningUI : MonoBehaviour
 {
     [SerializeField] private StoveCounter stoveCounter;
-
-    private const float BurnShowProgressAmount = 0.5f;
     
     private void Start()
     {
@@ -18,7 +16,8 @@ public class StoveBurnWarningUI : MonoBehaviour
 
     private void StoveCounter_OnProgressChanged(object sender, IHasProgress.OnProgressChangedEventArgs e)
     {
-        var show = stoveCounter.IsFried() && e.ProgressNormalized >= BurnShowProgressAmount;
+        const float burnShowProgressAmount = 0.5f;
+        var show = stoveCounter.IsFried() && e.ProgressNormalized >= burnShowProgressAmount;
         
         if (show) Show();
         else Hide();
