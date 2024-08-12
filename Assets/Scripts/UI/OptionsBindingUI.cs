@@ -11,18 +11,17 @@ public class OptionsBindingUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI bindingText;
     [SerializeField] private Button resetButton;
     [SerializeField] private GameInput.Binding binding;
+    [SerializeField] private Color rebindingTextColour;
 
     private Color _defaultTextColour;
-    private Color _highlightTextColour;
 
     private void Awake()
     {
         _defaultTextColour = bindingText.color;
-        _highlightTextColour = new Color(210/255.0f, 175/255.0f, 0);
         
         bindingButton.onClick.AddListener(() =>
         {
-            bindingText.color = _highlightTextColour;
+            bindingText.color = rebindingTextColour;
             GameInput.Instance.RebindBinding(binding, () =>
             {
                 bindingText.color = _defaultTextColour;

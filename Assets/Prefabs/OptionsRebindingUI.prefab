@@ -476,6 +476,7 @@ MonoBehaviour:
   bindingText: {fileID: 7989861144181428616}
   resetButton: {fileID: 6240941668513053148}
   binding: 0
+  highlightTextColour: {r: 0.8235294, g: 0.6862745, b: 0, a: 1}
 --- !u!1 &6217361025612860085
 GameObject:
   m_ObjectHideFlags: 0
